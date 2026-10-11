@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useId } from 'react';
 
 interface GreensoftLogoProps {
   variant?: 'full' | 'emblem' | 'compact';
@@ -7,12 +7,84 @@ interface GreensoftLogoProps {
   theme?: 'dark' | 'light';
 }
 
+/** Official Greensoft brand colours (sampled from the master logo). */
+const BRAND_GREEN = '#489545';
+const BRAND_GREEN_LIGHT = '#a1c84d';
+const BRAND_GREEN_MID = '#539c44';
+const BRAND_GREY = '#414141';
+
+const WORDMARK_FONT = "'Montserrat', 'Manrope', sans-serif";
+const SLOGAN_FONT = "'Herr Von Muellerhoff', 'Caveat', cursive";
+
+interface GreensoftWordmarkProps {
+  /** Font size of "GREENSOFT" in px; the slogan scales with it. */
+  fontSize?: number;
+  /** Show the "Make It Different" slogan under the name. */
+  slogan?: boolean;
+  align?: 'start' | 'center';
+  theme?: 'dark' | 'light';
+  className?: string;
+}
+
+/** "GREENSOFT" wordmark with optional "Make It Different" slogan. */
+export const GreensoftWordmark: React.FC<GreensoftWordmarkProps> = ({
+  fontSize = 24,
+  slogan = true,
+  align = 'start',
+  theme = 'dark',
+  className = '',
+}) => (
+  <div
+    className={`flex flex-col leading-none select-none ${align === 'center' ? 'items-center' : 'items-start'} ${className}`}
+  >
+    <div
+      className="flex items-center font-semibold uppercase leading-none whitespace-nowrap"
+      style={{ fontFamily: WORDMARK_FONT, fontSize, letterSpacing: '0.1em' }}
+    >
+      <span style={{ color: BRAND_GREEN }}>GREEN</span>
+      <span style={{ color: theme === 'dark' ? '#ffffff' : BRAND_GREY }}>SOFT</span>
+    </div>
+    {slogan && (
+      <span
+        className="leading-none whitespace-nowrap"
+        style={{
+          fontFamily: SLOGAN_FONT,
+          fontSize: fontSize * 0.72,
+          letterSpacing: '0.3em',
+          marginTop: fontSize * 0.1,
+          color: theme === 'dark' ? '#cbd5e1' : BRAND_GREY,
+        }}
+      >
+        Make It Different
+      </span>
+    )}
+  </div>
+);
+
+/** Ring nodes of the circuit tree, in the 128×128 emblem coordinate space. */
+const NODES = [
+  { cx: 64, cy: 36 },
+  { cx: 48.5, cy: 56 },
+  { cx: 79.5, cy: 56 },
+  { cx: 32.5, cy: 72 },
+  { cx: 95.5, cy: 72 },
+];
+
+/** 45° branches running from a side node down into the trunk. */
+const BRANCHES = [
+  'M54.5 62 L64 71.5',
+  'M73.5 62 L64 71.5',
+  'M38.5 78 L64 103.5',
+  'M89.5 78 L64 103.5',
+];
+
 /**
  * Recreates the official Greensoft vector logo:
- * - Rounded diamond emblem with lush green gradient
- * - Neural/circuit network tree with 7 node endpoints
- * - "GREENSOFT" typographic mark
- * - "Make It Different" signature slogan
+ * - Rounded diamond emblem with a vertical yellow-green → green gradient
+ * - White circuit tree: trunk running to the bottom tip, four 45° branches
+ *   and five hollow ring nodes
+ * - "GREENSOFT" wordmark (GREEN in brand green, SOFT in charcoal)
+ * - "Make It Different" handwritten slogan
  */
 export const GreensoftLogo: React.FC<GreensoftLogoProps> = ({
   variant = 'full',
@@ -20,103 +92,50 @@ export const GreensoftLogo: React.FC<GreensoftLogoProps> = ({
   className = '',
   theme = 'dark',
 }) => {
-  // Unique gradient ID to prevent SVG clashes
-  const gradId = 'gs-leaf-grad';
+  // Unique IDs so several logos on one page don't share <defs>
+  const uid = useId().replace(/:/g, '');
+  const gradId = `gs-grad-${uid}`;
+  const clipId = `gs-clip-${uid}`;
 
   const emblem = (
     <svg
       width={size}
       height={size}
-      viewBox="0 0 160 160"
+      viewBox="0 0 128 128"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="shrink-0 transition-transform duration-300 hover:scale-105"
+      role="img"
       aria-label="Greensoft Logo Mark"
     >
       <defs>
-        <linearGradient id={gradId} x1="18" y1="18" x2="142" y2="142" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#76b82a" />
-          <stop offset="45%" stopColor="#43a047" />
-          <stop offset="100%" stopColor="#1b5e20" />
+        <linearGradient id={gradId} x1="64" y1="1" x2="64" y2="127" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor={BRAND_GREEN_LIGHT} />
+          <stop offset="58%" stopColor={BRAND_GREEN_MID} />
+          <stop offset="100%" stopColor={BRAND_GREEN} />
         </linearGradient>
-        <filter id="gs-glow" x="0" y="0" width="160" height="160" filterUnits="userSpaceOnUse">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#2e7d32" floodOpacity="0.35" />
-        </filter>
+        <clipPath id={clipId}>
+          <rect x="11.5" y="11.5" width="105" height="105" rx="26" transform="rotate(45 64 64)" />
+        </clipPath>
       </defs>
 
-      {/* Rounded Diamond Badge (Rotated Squircle) */}
-      <rect
-        x="80"
-        y="12"
-        width="96"
-        height="96"
-        rx="26"
-        transform="rotate(45 80 12)"
-        fill={`url(#${gradId})`}
-        filter="url(#gs-glow)"
-      />
+      {/* Rounded diamond badge (unrotated fill + clip keeps the gradient vertical) */}
+      <rect width="128" height="128" fill={`url(#${gradId})`} clipPath={`url(#${clipId})`} />
 
-      {/* Circuit / Neural Tree Trunk */}
-      <path
-        d="M80 122 V46"
-        stroke="#ffffff"
-        strokeWidth="6"
-        strokeLinecap="round"
-      />
+      <g clipPath={`url(#${clipId})`} stroke="#ffffff" strokeLinecap="round">
+        {/* Trunk – runs out through the bottom tip of the diamond */}
+        <path d="M64 44.5 V140" strokeWidth="4" strokeLinecap="butt" />
 
-      {/* Top Node */}
-      <circle cx="80" cy="42" r="7" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
+        {/* Branches */}
+        {BRANCHES.map((d) => (
+          <path key={d} d={d} strokeWidth="4" />
+        ))}
 
-      {/* Branch Pair 1 (Upper) */}
-      <path
-        d="M80 66 L54 50"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="54" cy="50" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
-
-      <path
-        d="M80 66 L106 50"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="106" cy="50" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
-
-      {/* Branch Pair 2 (Middle) */}
-      <path
-        d="M80 84 L44 68"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="44" cy="68" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
-
-      <path
-        d="M80 84 L116 68"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="116" cy="68" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
-
-      {/* Branch Pair 3 (Lower) */}
-      <path
-        d="M80 102 L38 88"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="38" cy="88" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
-
-      <path
-        d="M80 102 L122 88"
-        stroke="#ffffff"
-        strokeWidth="5"
-        strokeLinecap="round"
-      />
-      <circle cx="122" cy="88" r="6.5" fill="#ffffff" stroke="#43a047" strokeWidth="2.5" />
+        {/* Hollow ring nodes */}
+        {NODES.map(({ cx, cy }) => (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r="6" strokeWidth="5" fill="none" />
+        ))}
+      </g>
     </svg>
   );
 
@@ -128,28 +147,10 @@ export const GreensoftLogo: React.FC<GreensoftLogoProps> = ({
     <div className={`inline-flex flex-col items-center select-none ${className}`}>
       {emblem}
       {variant === 'full' && (
-        <div className="mt-3 flex flex-col items-center">
-          <div className="flex items-center font-extrabold tracking-[0.22em] text-2xl uppercase leading-none font-sans">
-            <span className="text-[#388e3c]">GREEN</span>
-            <span className={theme === 'dark' ? 'text-white' : 'text-[#334155]'}>SOFT</span>
-          </div>
-          <span
-            className="text-sm font-semibold tracking-wide italic mt-1.5 opacity-90"
-            style={{
-              fontFamily: "'Caveat', cursive, sans-serif",
-              fontSize: '18px',
-              color: theme === 'dark' ? '#cbd5e1' : '#475569',
-            }}
-          >
-            Make It Different
-          </span>
-        </div>
+        <GreensoftWordmark fontSize={Math.round(size * 0.3)} align="center" theme={theme} className="mt-3" />
       )}
       {variant === 'compact' && (
-        <div className="flex items-center gap-1.5 mt-1 font-bold tracking-[0.16em] text-sm uppercase">
-          <span className="text-[#388e3c]">GREEN</span>
-          <span className={theme === 'dark' ? 'text-white' : 'text-[#334155]'}>SOFT</span>
-        </div>
+        <GreensoftWordmark fontSize={14} slogan={false} align="center" theme={theme} className="mt-1" />
       )}
     </div>
   );

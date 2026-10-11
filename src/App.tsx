@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Modals, ModalType } from './components/Modals';
-import { GreensoftLogo } from './components/GreensoftLogo';
+import { GreensoftLogo, GreensoftWordmark } from './components/GreensoftLogo';
 import { StickyNav } from './components/StickyNav';
 import { AboutSection } from './components/AboutSection';
 import { ProductsSection } from './components/ProductsSection';
@@ -223,18 +223,7 @@ export default function App() {
             title="GreenSoftits Co.,Ltd · Make It Different"
           >
             <GreensoftLogo variant="emblem" size={54} />
-            <div className="flex flex-col items-start leading-none select-none">
-              <div className="flex items-center font-extrabold tracking-[0.22em] text-2xl uppercase leading-none font-sans">
-                <span className="text-[#388e3c]">GREEN</span>
-                <span className="text-white">SOFT</span>
-              </div>
-              <span 
-                className="text-sm text-zinc-300 font-semibold tracking-wide italic mt-1"
-                style={{ fontFamily: "'Caveat', cursive, sans-serif", fontSize: '18px' }}
-              >
-                Make It Different
-              </span>
-            </div>
+            <GreensoftWordmark fontSize={24} />
           </a>
 
           {/* Centered: Menu Links (About, Products, Recruitment, Contact) */}
@@ -299,13 +288,7 @@ export default function App() {
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <GreensoftLogo variant="emblem" size={38} />
-                <div className="flex flex-col leading-none">
-                  <div className="font-extrabold tracking-[0.2em] text-lg uppercase">
-                    <span className="text-[#388e3c]">GREEN</span>
-                    <span className="text-white">SOFT</span>
-                  </div>
-                  <span className="text-xs text-zinc-400 italic font-serif">Make It Different</span>
-                </div>
+                <GreensoftWordmark fontSize={18} />
               </div>
 
               {/* Mobile Language Switcher */}

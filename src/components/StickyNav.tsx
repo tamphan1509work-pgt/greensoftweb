@@ -1,5 +1,5 @@
 import React from 'react';
-import { GreensoftLogo } from './GreensoftLogo';
+import { GreensoftLogo, GreensoftWordmark } from './GreensoftLogo';
 import { Language, translations } from '../i18n/translations';
 
 interface StickyNavProps {
@@ -51,18 +51,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
           title="GreenSoft · Make It Different"
         >
           <GreensoftLogo variant="emblem" size={38} />
-          <div className="flex flex-col items-start leading-none select-none">
-            <div className="flex items-center font-extrabold tracking-[0.2em] text-lg uppercase font-sans">
-              <span className="text-[#388e3c]">GREEN</span>
-              <span className="text-white">SOFT</span>
-            </div>
-            <span
-              className="text-xs text-zinc-300 font-semibold tracking-wide italic mt-0.5"
-              style={{ fontFamily: "'Caveat', cursive, sans-serif", fontSize: '15px' }}
-            >
-              Make It Different
-            </span>
-          </div>
+          <GreensoftWordmark fontSize={18} />
         </a>
 
         {/* Center: Navigation links */}
