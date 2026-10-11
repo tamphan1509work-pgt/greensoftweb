@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { 
   Building2, GraduationCap, Coffee, MessageSquare, 
-  Armchair, Factory, BookOpen, ShieldCheck, CheckCircle2, ArrowRight 
+  Armchair, Factory, BookOpen, ShieldCheck, CheckCircle2, ArrowRight, Maximize2, X 
 } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 import { GeometricDepthBackground } from './GeometricDepthBackground';
@@ -9,13 +10,29 @@ import { LazyBlock } from './LazyBlock';
 import { DepthParallaxImage } from './DepthParallaxImage';
 import { Language } from '../i18n/translations';
 
+// Real project slides (16:9), keyed by solution id; solutions without one keep the stock photo
+const SOLUTION_SLIDES: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>('../assets/solutions/*.webp', { eager: true, query: '?url', import: 'default' }),
+  ).map(([path, url]) => [path.split('/').pop()!.replace(/\.webp$/, ''), url]),
+);
+
 interface SolutionsSectionProps {
   lang?: Language;
 }
 
 export const SolutionsSection: React.FC<SolutionsSectionProps> = ({ lang = 'VI' }) => {
   const [activeSolution, setActiveSolution] = useState<string>('crm');
+  const [zoomedSlide, setZoomedSlide] = useState<string | null>(null);
   const isEn = lang === 'EN';
+
+  // Close the slide lightbox with Escape
+  useEffect(() => {
+    if (!zoomedSlide) return;
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setZoomedSlide(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [zoomedSlide]);
 
   const solutions = [
     {
@@ -381,26 +398,72 @@ export const SolutionsSection: React.FC<SolutionsSectionProps> = ({ lang = 'VI' 
 
                 {/* Right Column: Visual Preview with Subtle Depth-Parallax */}
                 <div className="lg:col-span-5">
-                  <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl group">
-                    <DepthParallaxImage
-                      src={current.image}
-                      alt={current.imageAlt}
-                      className="w-full h-80 object-cover"
-                      speed={0.16}
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
-                    <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
-                      <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-black/60 px-2.5 py-1 rounded border border-emerald-500/30">
-                        {current.systemTag}
-                      </span>
+                  {SOLUTION_SLIDES[current.id] ? (
+                    <figure className="space-y-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setZoomedSlide(SOLUTION_SLIDES[current.id])}
+                        className="group relative block w-full aspect-video rounded-xl overflow-hidden border border-white/10 shadow-2xl cursor-zoom-in bg-zinc-900"
+                        aria-label={isEn ? `Enlarge: ${current.title}` : `Phóng to: ${current.title}`}
+                      >
+                        <img
+                          src={SOLUTION_SLIDES[current.id]}
+                          alt={current.imageAlt}
+                          loading="lazy"
+                          draggable={false}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
+                        />
+                        <span className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-black/60 border border-white/20 text-white flex items-center justify-center opacity-80 group-hover:opacity-100 transition-opacity">
+                          <Maximize2 className="w-4 h-4" />
+                        </span>
+                      </button>
+                      <figcaption className="flex items-center justify-between gap-3 text-[11px] text-zinc-500">
+                        <span className="font-mono uppercase tracking-widest text-emerald-400 font-bold">{current.systemTag}</span>
+                        <span>{isEn ? 'Click to enlarge' : 'Bấm để phóng to'}</span>
+                      </figcaption>
+                    </figure>
+                  ) : (
+                    <div className="relative rounded-xl overflow-hidden border border-white/10 shadow-2xl group">
+                      <DepthParallaxImage
+                        src={current.image}
+                        alt={current.imageAlt}
+                        className="w-full h-80 object-cover"
+                        speed={0.16}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent pointer-events-none" />
+                      <div className="absolute bottom-4 left-4 right-4 pointer-events-none">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold bg-black/60 px-2.5 py-1 rounded border border-emerald-500/30">
+                          {current.systemTag}
+                        </span>
+                      </div>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
             </div>
           </ScrollReveal>
         </LazyBlock>
       </div>
+      {/* Slide lightbox (portalled to <body> so it sits above the sticky nav) */}
+      {zoomedSlide && createPortal(
+        <div
+          className="fixed inset-0 z-[70] bg-black/90 backdrop-blur-sm flex items-center justify-center p-3 sm:p-8 cursor-zoom-out"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => setZoomedSlide(null)}
+        >
+          <img src={zoomedSlide} alt="" className="max-w-full max-h-full rounded-lg shadow-2xl" />
+          <button
+            type="button"
+            onClick={() => setZoomedSlide(null)}
+            aria-label={isEn ? 'Close' : 'Đóng'}
+            className="absolute top-4 right-4 w-10 h-10 rounded-full bg-white/10 border border-white/20 text-white flex items-center justify-center cursor-pointer"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>,
+        document.body,
+      )}
     </section>
   );
 };
