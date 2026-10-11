@@ -334,7 +334,7 @@ export default function App() {
               <GreensoftLogo variant="emblem" size={22} />
               <span className="kicker-tag">{t.hero.kickerTag}</span>
               <span className="text-zinc-600">·</span>
-              <span className="kicker-sub font-serif italic">{t.hero.kickerSub}</span>
+              <span className="kicker-sub italic">{t.hero.kickerSub}</span>
             </div>
 
             {/* Headline */}

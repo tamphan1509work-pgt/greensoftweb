@@ -65,7 +65,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ lang = 'VI' }) =
         </div>
 
         {/* Greensoft AI assistant mascot */}
-        <div className="relative shrink-0 self-center sm:self-end w-36 sm:w-44 lg:w-56 -mb-4 pointer-events-none select-none">
+        <div className="relative shrink-0 self-center sm:self-end w-28 sm:w-36 lg:w-44 -mb-4 pointer-events-none select-none">
           <div
             className="absolute -inset-6"
             style={{ background: 'radial-gradient(closest-side, rgba(16,185,129,0.22), rgba(16,185,129,0) 100%)' }}
@@ -261,12 +261,12 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ lang = 'VI' }) =
           <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-950/40 to-zinc-950 border border-emerald-500/20 text-xs text-zinc-300 space-y-2">
             <div className="flex items-center gap-2 font-semibold text-emerald-400 text-sm">
               <Sparkles className="w-4 h-4" />
-              <span>Make It Different with Applied AI</span>
+              <span>{isEn ? 'Make It Different with Applied AI' : 'Kiến tạo khác biệt bằng AI thực chiến'}</span>
             </div>
             <p className="text-zinc-400 leading-relaxed">
               {isEn
                 ? 'Applied AI products in production · 7+ industries served · World-class AI specialists guiding your transformation from initial Discovery to live SLA operations.'
-                : 'Applied AI products in production · 7+ industries served · Đội ngũ chuyên gia AI quốc tế đồng hành từ bước Discovery đến bàn giao vận hành dài hạn.'}
+                : 'Sản phẩm AI đang vận hành thực tế · Phục vụ hơn 7 lĩnh vực · Đội ngũ chuyên gia AI quốc tế đồng hành cùng doanh nghiệp từ khâu khảo sát, tư vấn đến bàn giao và vận hành dài hạn.'}
             </p>
           </div>
         </div>
