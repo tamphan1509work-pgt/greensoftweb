@@ -1,5 +1,12 @@
 import React from 'react';
 
+// Official customer logos, keyed by customer id (file name without extension)
+const CUSTOMER_LOGO_IMAGES: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>('../assets/customers/*.png', { eager: true, query: '?url', import: 'default' }),
+  ).map(([path, url]) => [path.split('/').pop()!.replace(/\.png$/, ''), url]),
+);
+
 interface PartnerLogoProps {
   id: string;
   name: string;
@@ -171,252 +178,21 @@ interface CustomerBrandProps {
  * - Acecook: Chef kid with pot + "Cook happiness ACECOOK" red ribbon
  */
 export const CustomerBrandLogo: React.FC<CustomerBrandProps> = ({ id, name, className = '' }) => {
+  // Featured customers use the official logo artwork (cropped from the customers slide)
+  const logoSrc = CUSTOMER_LOGO_IMAGES[id];
+  if (logoSrc) {
+    return (
+      <img
+        src={logoSrc}
+        alt={name}
+        loading="lazy"
+        draggable={false}
+        className={`max-h-full max-w-full w-auto h-auto object-contain ${className}`}
+      />
+    );
+  }
+
   switch (id) {
-    // Exact 12 customer logos from user's attached slide image (2 rows of 6)
-    case 'nhg':
-      // NHG: Nguyen Hoang Group - Green "NH" + Green/Red split "G" + "Nguyen Hoang Group" text
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          <path d="M8 11 H20 V23 H30 V11 H42 V37 H30 V27 H20 V37 H8 Z" fill="#00A651" />
-          {/* Letter G top half green */}
-          <path d="M46 24 C46 16.5 53 11 63 11 C72 11 77 15 79 19.5 L70 21.5 C69 19 66 17 63 17 C57.5 17 53.5 20 53.5 24 Z" fill="#00A651" />
-          {/* Diagonal white dividing slant */}
-          {/* Letter G bottom half red */}
-          <path d="M53.5 24 C53.5 28.5 57.5 31.5 63 31.5 C67 31.5 70 29.5 71 27 H62 V22.5 H79 V32.5 C75 36 69.5 37.5 63 37.5 C52 37.5 46 31 46 24 Z" fill="#E30613" />
-          <text x="83" y="24" fill="#1C1C1E" fontSize="7.5" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif">
-            Nguyen Hoang
-          </text>
-          <text x="83" y="34.5" fill="#1C1C1E" fontSize="8" fontWeight="800" fontFamily="system-ui, -apple-system, sans-serif">
-            Group
-          </text>
-        </svg>
-      );
-
-    case 'gia-dinh':
-      // GIA DINH UNIVERSITY: Golden wreath with navy shield + "GĐ" monogram + POPULARIS banner
-      return (
-        <svg viewBox="0 0 160 52" className={`w-auto h-11 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(12, 1)">
-            {/* Left wreath leaves */}
-            <path d="M8 22 C4 18 5 12 9 8 C10 12 9 17 12 21 Z" fill="#C5A059" />
-            <path d="M5 16 C1 13 2 8 6 5 C7 9 6 13 9 16 Z" fill="#C5A059" />
-            <path d="M9 10 C6 7 7 2 11 1 C11 5 10 9 12 11 Z" fill="#C5A059" />
-            {/* Right wreath leaves */}
-            <path d="M30 22 C34 18 33 12 29 8 C28 12 29 17 26 21 Z" fill="#C5A059" />
-            <path d="M33 16 C37 13 36 8 32 5 C31 9 32 13 29 16 Z" fill="#C5A059" />
-            <path d="M29 10 C32 7 31 2 27 1 C27 5 28 9 26 11 Z" fill="#C5A059" />
-            {/* Navy Shield with gold border */}
-            <path d="M12 4 L26 4 L26 18 C26 24 19 28 19 28 C19 28 12 24 12 18 Z" fill="#0E2A63" stroke="#C5A059" strokeWidth="1.2" />
-            {/* Shield Center GD monogram */}
-            <text x="19" y="16" fill="#C5A059" fontSize="6.5" fontWeight="bold" fontFamily="serif" textAnchor="middle">
-              GĐ
-            </text>
-            {/* Blue Banner with POPULARIS */}
-            <path d="M9 27 L29 27 L28 31.5 L10 31.5 Z" fill="#0E2A63" stroke="#C5A059" strokeWidth="0.6" />
-            <text x="19" y="30.5" fill="#C5A059" fontSize="3.6" fontWeight="bold" letterSpacing="0.4" textAnchor="middle">
-              POPULARIS
-            </text>
-          </g>
-          {/* Typography: GIA DINH UNIVERSITY */}
-          <text x="64" y="21" fill="#B88A3B" fontSize="12" fontWeight="700" fontFamily="'Georgia', serif" letterSpacing="1">
-            GIA DINH
-          </text>
-          <text x="64" y="33" fill="#B88A3B" fontSize="8.5" fontWeight="600" fontFamily="'Georgia', serif" letterSpacing="1.2">
-            UNIVERSITY
-          </text>
-        </svg>
-      );
-
-    case 'masterise-homes':
-      // MASTERISE HOMES: Architectural bronze/gold M icon + "MASTERISE HOMES"
-      return (
-        <svg viewBox="0 0 160 52" className={`w-auto h-11 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(68, 3)">
-            {/* Architectural M: vertical pillars & dual peaks */}
-            <path d="M0 6 L4.5 6 L4.5 24 L0 24 Z" fill="#B58D59" />
-            <path d="M19.5 6 L24 6 L24 24 L19.5 24 Z" fill="#B58D59" />
-            <path d="M6.5 6 L12 0 L12 20 L8 24 L8 9 Z" fill="#B58D59" />
-            <path d="M17.5 6 L12 0 L12 20 L16 24 L16 9 Z" fill="#B58D59" />
-          </g>
-          <text x="80" y="42" fill="#B58D59" fontSize="7.8" fontWeight="700" letterSpacing="1.8" fontFamily="system-ui, -apple-system, sans-serif" textAnchor="middle">
-            MASTERISE HOMES
-          </text>
-        </svg>
-      );
-
-    case 'druce':
-      // DRUCE: Golden rosette/pinwheel emblem + classic serif DRUCE
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(16, 12)">
-            {/* Swirling Pinwheel / Rosette */}
-            <circle cx="12" cy="12" r="11" stroke="#B58D59" strokeWidth="1" fill="none" />
-            <path d="M12 1 C16 6 16 11 12 12 C8 11 8 6 12 1 Z" stroke="#B58D59" strokeWidth="0.9" fill="none" />
-            <path d="M23 12 C18 16 13 16 12 12 C13 8 18 8 23 12 Z" stroke="#B58D59" strokeWidth="0.9" fill="none" />
-            <path d="M12 23 C8 18 8 13 12 12 C16 13 16 18 12 23 Z" stroke="#B58D59" strokeWidth="0.9" fill="none" />
-            <path d="M1 12 C6 8 11 8 12 12 C11 16 6 16 1 12 Z" stroke="#B58D59" strokeWidth="0.9" fill="none" />
-            <circle cx="12" cy="12" r="2.5" fill="#B58D59" />
-          </g>
-          <text x="48" y="30" fill="#B58D59" fontSize="21" fontWeight="600" fontFamily="'Georgia', serif" letterSpacing="2">
-            DRUCE
-          </text>
-        </svg>
-      );
-
-    case 'millennia':
-      // millennia EDUCATION + Triple Shield Wings icon
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          <text x="10" y="24" fill="#0A2540" fontSize="16" fontWeight="700" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="-0.5">
-            millennia
-          </text>
-          <text x="12" y="35" fill="#0A2540" fontSize="6.5" fontWeight="600" letterSpacing="1.2" fontFamily="system-ui, -apple-system, sans-serif">
-            EDUCATION
-          </text>
-          {/* Triple forward shields */}
-          <g transform="translate(112, 10)">
-            <path d="M4 2 L14 8 L14 18 L4 24 L2 22 L2 4 Z" fill="#0A2540" />
-            <path d="M12 2 L22 8 L22 18 L12 24 L10 22 L10 4 Z" fill="#1E40AF" />
-            <path d="M20 2 L28 8 L28 18 L20 24 L18 22 L18 4 Z" fill="#2563EB" />
-          </g>
-        </svg>
-      );
-
-    case 'modale':
-      // MODALE: Portal arch ∏ + O D A L E in warm bronze
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-9 max-w-full ${className}`} fill="none" aria-label={name}>
-          {/* Stylized Arch Portal ∏ for M */}
-          <g transform="translate(16, 13)">
-            <rect x="0" y="0" width="18" height="3.5" fill="#A87B4B" />
-            <rect x="0" y="3.5" width="3.5" height="15.5" fill="#A87B4B" />
-            <rect x="14.5" y="3.5" width="3.5" height="15.5" fill="#A87B4B" />
-          </g>
-          {/* ODALE letters */}
-          <text x="42" y="30" fill="#A87B4B" fontSize="18" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="3.5">
-            ODALE
-          </text>
-        </svg>
-      );
-
-    case 'imes-pro':
-      // IMES PRO: Cyan wave loop with dot + dark IMES + cyan PRO
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(10, 8)">
-            {/* Azure / Cyan looping node symbol */}
-            <circle cx="21" cy="5" r="2.5" fill="#00A0E9" />
-            <path d="M8 20 C4 20 2 16 5 12 C9 7 17 8 20 13 C23 18 29 20 32 16 C34 13 32 10 28 10 C24 10 20 14 18 19" stroke="#00A0E9" strokeWidth="3" strokeLinecap="round" fill="none" />
-            <path d="M12 11 C8 15 15 22 24 15" stroke="#0284C7" strokeWidth="2.5" strokeLinecap="round" fill="none" />
-          </g>
-          <text x="48" y="29.5" fill="#334155" fontSize="17" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.2">
-            IMES
-          </text>
-          <text x="94" y="29.5" fill="#00A0E9" fontSize="17" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.5">
-            PRO
-          </text>
-        </svg>
-      );
-
-    case 'smartland':
-      // Smartland: Red cursive S + red martland + yellow underline under land
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          {/* Flowing script S */}
-          <g transform="translate(14, 8)">
-            <path d="M18 4 C10 4 6 8 8 13 C10 18 18 20 15 26 C12 30 5 29 0 26 C3 29 10 32 16 30 C22 28 23 21 19 16 C15 11 12 8 15 6 C17 4 21 5 24 7" stroke="#D32F2F" strokeWidth="2.6" strokeLinecap="round" fill="none" />
-          </g>
-          {/* martland in red sans-serif */}
-          <text x="36" y="27" fill="#D32F2F" fontSize="18" fontWeight="600" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="-0.2">
-            martland
-          </text>
-          {/* Yellow accent underline beneath 'land' */}
-          <rect x="74" y="32" width="40" height="2.5" rx="1.2" fill="#FBC02D" />
-        </svg>
-      );
-
-    case 'inmatech':
-      // INMATECH: Red dual chevron diamonds icon + Navy INMATECH
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-9 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(12, 13)">
-            {/* Red geometric icon: two facing chevron diamonds with a diamond negative center */}
-            <polygon points="12,0 24,10 12,20 0,10" fill="#EF4444" />
-            <polygon points="12,4 19,10 12,16 5,10" fill="#FFF" />
-            <polygon points="12,6 16,10 12,14 8,10" fill="#EF4444" />
-          </g>
-          {/* Navy bold INMATECH */}
-          <text x="42" y="28.5" fill="#0F3460" fontSize="16.5" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="0.4">
-            INMATECH
-          </text>
-        </svg>
-      );
-
-    case 'stormbird':
-      // STORMBIRD: Dark navy rectangular badge + white flight emblem + STORMBIRD
-      return (
-        <svg viewBox="0 0 160 48" className={`w-auto h-10 max-w-full ${className}`} fill="none" aria-label={name}>
-          {/* Dark Navy / Black Background Plate */}
-          <rect x="10" y="3" width="140" height="42" rx="4" fill="#070D1E" />
-          <g transform="translate(68, 6)">
-            {/* Stylized sharp white bird wings in flight */}
-            <path d="M0 6 L18 6 L24 2 L22 8 L8 8 Z" fill="#FFF" />
-            <path d="M4 9 L20 9 L23 12 L10 12 Z" fill="#FFF" />
-            <path d="M8 13 L22 13 L24 16 L14 16 Z" fill="#FFF" />
-            <line x1="2" y1="18" x2="26" y2="18" stroke="#FFF" strokeWidth="0.8" />
-          </g>
-          <text x="80" y="36.5" fill="#FFF" fontSize="8" fontWeight="800" letterSpacing="2" fontFamily="system-ui, -apple-system, sans-serif" textAnchor="middle">
-            STORMBIRD
-          </text>
-        </svg>
-      );
-
-    case 'tsp':
-      // TSP: Teal "TS" + Navy "P" with camera eye iris inside P + base line
-      return (
-        <svg viewBox="0 0 160 50" className={`w-auto h-11 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(16, 5)">
-            {/* Teal "T" and "S" */}
-            <path d="M0 6 L16 6 L16 11 L10.5 11 L10.5 28 L5.5 28 L5.5 11 L0 11 Z" fill="#009688" />
-            <path d="M18 20 C18 16 21 14 26 14 C31 14 34 16 34 20 L30 20 C30 18 28 17 26 17 C24 17 22 18 22 20 C22 24 34 22 34 29 C34 33 30 35 25 35 C20 35 17 33 17 28 L21 28 C21 31 23 32 25 32 C28 32 30 31 30 29 C30 25 18 27 18 20 Z" fill="#009688" />
-            {/* Navy "P" with iris inside */}
-            <path d="M37 5 C46 5 53 10 53 19 C53 28 46 33 37 33 L37 40 L31 40 L31 5 L37 5 Z" fill="#102A5C" />
-            {/* Circular teal eye / camera iris inside the bowl of P */}
-            <circle cx="43" cy="19" r="6" fill="#009688" />
-            <circle cx="43" cy="19" r="2.5" fill="#102A5C" />
-            {/* Navy underline under TS connecting to P stem */}
-            <rect x="0" y="32" width="35" height="5" fill="#102A5C" />
-            {/* Registered Trademark symbol */}
-            <circle cx="56" cy="6" r="2.5" stroke="#102A5C" strokeWidth="0.6" fill="none" />
-            <text x="56" y="7.5" fill="#102A5C" fontSize="2.8" fontWeight="bold" textAnchor="middle">®</text>
-          </g>
-        </svg>
-      );
-
-    case 'we-angels':
-      // WeAngels CAPITAL: Golden-orange geometric W + navy triangle + navy WeAngels + ― CAPITAL ―
-      return (
-        <svg viewBox="0 0 160 52" className={`w-auto h-11 max-w-full ${className}`} fill="none" aria-label={name}>
-          <g transform="translate(62, 3)">
-            {/* Golden-orange W wings */}
-            <path d="M0 0 L10 16 L18 16 L8 0 Z" fill="#F59E0B" />
-            <path d="M36 0 L26 16 L18 16 L28 0 Z" fill="#F59E0B" />
-            {/* Navy triangle inside center */}
-            <polygon points="18,5 23,14 13,14" fill="#0F2042" />
-          </g>
-          {/* WeAngels wordmark */}
-          <text x="80" y="34.5" fill="#0F2042" fontSize="16" fontWeight="900" fontFamily="system-ui, -apple-system, sans-serif" letterSpacing="-0.3" textAnchor="middle">
-            WeAngels
-          </text>
-          {/* ― CAPITAL ― with horizontal flanking lines */}
-          <line x1="36" y1="43.5" x2="56" y2="43.5" stroke="#0F2042" strokeWidth="0.8" />
-          <text x="80" y="46" fill="#0F2042" fontSize="6.5" fontWeight="700" letterSpacing="2" fontFamily="system-ui, -apple-system, sans-serif" textAnchor="middle">
-            CAPITAL
-          </text>
-          <line x1="104" y1="43.5" x2="124" y2="43.5" stroke="#0F2042" strokeWidth="0.8" />
-        </svg>
-      );
-
     case 'ghn':
       // GHN: 3D blue-orange parcel box + bold orange italic GHN + GIAO HÀNG NHANH
       return (
