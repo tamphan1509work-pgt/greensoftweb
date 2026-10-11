@@ -132,6 +132,11 @@ html, body {
   }
 }
 
+@keyframes portalMobileEntrance {
+  from { transform: scale(1.08); opacity: 0; }
+  to { transform: scale(var(--plate-video-scale, 1)); opacity: 1; }
+}
+
 /* Dynamic portal energy box-shadow glow pulses */
 @keyframes portalEnergyPulse {
   0% {
@@ -353,6 +358,19 @@ html, body {
     opacity: 1;
     -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
     mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+  }
+
+  /* The desktop entrance animation shifts the video by -50% on X; use a
+     centred zoom-in on portrait screens instead. */
+  .plate-video {
+    animation: portalMobileEntrance 1.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s 1 backwards;
+  }
+
+  /* Let the hero grow with its content so the metrics row is never clipped */
+  .stage {
+    height: auto;
+    min-height: 100vh;
+    min-height: 100svh;
   }
 
   .plate::after {
