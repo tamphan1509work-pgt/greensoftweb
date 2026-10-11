@@ -467,7 +467,7 @@ export const Modals: React.FC<ModalsProps> = ({ activeModal, onClose, onSwitchMo
                 <div className="space-y-2.5">
                   <div className="flex items-start gap-2.5">
                     <MapPin className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                    <span>32/26 Bach Dang street, Binh Thanh, Ho Chi Minh City, Vietnam</span>
+                    <span>32/26 đường Bạch Đằng, P. Bình Thạnh, TP. Hồ Chí Minh, Việt Nam</span>
                   </div>
                   <div className="flex items-center gap-2.5">
                     <Mail className="w-4 h-4 text-emerald-400 shrink-0" />

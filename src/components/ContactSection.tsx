@@ -223,7 +223,7 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ lang = 'VI' }) =
                   <div className="font-semibold text-white mb-0.5">
                     {isEn ? 'Headquarters Office' : 'Văn phòng chính (Headquarters)'}
                   </div>
-                  <div className="text-zinc-400">32/26 Bach Dang street, Binh Thanh, Ho Chi Minh City, Vietnam</div>
+                  <div className="text-zinc-400">{isEn ? '32/26 Bach Dang street, Binh Thanh, Ho Chi Minh City, Vietnam' : '32/26 đường Bạch Đằng, P. Bình Thạnh, TP. Hồ Chí Minh, Việt Nam'}</div>
                 </div>
               </div>
 
