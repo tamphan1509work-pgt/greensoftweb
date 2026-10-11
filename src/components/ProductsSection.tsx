@@ -658,15 +658,9 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
               <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl shadow-emerald-950/40">
                 <img
                   src={PRODUCT_IMAGES[current.slug]}
-                  alt=""
-                  aria-hidden="true"
-                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
-                />
-                <img
-                  src={PRODUCT_IMAGES[current.slug]}
                   alt={current.name}
                   draggable={false}
-                  className="product-slide-image relative w-full h-full object-contain p-3 sm:p-4"
+                  className="product-slide-image w-full h-full object-cover"
                 />
               </div>
             </div>
