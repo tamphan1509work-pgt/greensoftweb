@@ -287,7 +287,7 @@ export default function App() {
         {/* Mobile Overlay Menu */}
         <nav className="menu" id="menu" aria-hidden={!isMenuOpen}>
           <div className="menu-inner">
-            <div className="flex items-center justify-between mb-6">
+            <div className="menu-head flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
                 <GreensoftLogo variant="emblem" size={38} />
                 <GreensoftWordmark fontSize={18} />

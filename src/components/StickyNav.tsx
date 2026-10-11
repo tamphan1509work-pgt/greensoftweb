@@ -36,7 +36,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
       }`}
       aria-label="Sticky Navigation"
     >
-      <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
         {/* Left: Big Company Symbol and Name */}
         <a
           href="#"
@@ -51,7 +51,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
           title="GreenSoft · Make It Different"
         >
           <GreensoftLogo variant="emblem" size={38} />
-          <GreensoftWordmark fontSize={18} />
+          <span className="hidden min-[400px]:block"><GreensoftWordmark fontSize={18} /></span>
         </a>
 
         {/* Center: Navigation links */}
@@ -83,7 +83,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
         </div>
 
         {/* Right: Language switch + Get in Touch CTA */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4 shrink-0">
           {onToggleLang && (
             <div className="inline-flex items-center p-1 rounded-full bg-white/5 border border-white/10 text-xs">
               <button
@@ -113,7 +113,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
               e.preventDefault();
               scrollTo('contact');
             }}
-            className="px-5 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-100 transition-transform active:scale-95 shadow-md shadow-white/5"
+            className="hidden sm:inline-flex items-center whitespace-nowrap px-5 py-2 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-100 transition-transform active:scale-95 shadow-md shadow-white/5"
           >
             {t.nav.getInTouch}
           </a>
