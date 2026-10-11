@@ -49,27 +49,30 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
   const steps = [
     {
       num: '01',
-      title: isEn ? 'Discovery & alignment' : 'Khám phá & Định hướng',
+      title: isEn ? 'Listen & understand' : 'Lắng nghe & Thấu hiểu',
       icon: <Compass className="w-5 h-5 text-emerald-400" />,
       desc: isEn
-        ? 'A working session to understand your current processes, the pain points that cost you most, and your transformation priorities.'
-        : 'Phiên làm việc chuyên sâu nhằm thấu hiểu quy trình hiện tại, các nút thắt tốn kém nhất và thứ tự ưu tiên chuyển đổi số của doanh nghiệp.'
+        ? 'We sit down with your team to map how work really flows today, pinpoint the bottlenecks that cost you most and agree on the transformation priorities that matter.'
+        : 'Chúng tôi ngồi lại cùng đội ngũ của bạn để hiểu quy trình đang vận hành, nhận diện những điểm nghẽn tốn kém nhất và xác định đâu là ưu tiên chuyển đổi quan trọng nhất.',
+      outcome: isEn ? 'Outcome · Problem map & priorities' : 'Kết quả · Bản đồ vấn đề & thứ tự ưu tiên'
     },
     {
       num: '02',
-      title: isEn ? 'Define phase one' : 'Xác định giai đoạn một',
+      title: isEn ? 'Pick the breakthrough' : 'Chọn điểm bứt phá',
       icon: <Rocket className="w-5 h-5 text-emerald-400" />,
       desc: isEn
-        ? 'We identify the early wins — the functions that deliver measurable value fastest — and agree what success looks like in numbers.'
-        : 'Xác định các mục tiêu sớm (early wins) mang lại giá trị định lượng nhanh nhất và thống nhất tiêu chí thành công bằng số liệu cụ thể.'
+        ? 'We single out the quick wins that deliver clear, measurable value fastest — and agree on exactly how success will be measured.'
+        : 'Khoanh vùng những hạng mục tạo ra giá trị nhanh và rõ ràng nhất, đồng thời thống nhất thước đo thành công bằng những con số cụ thể.',
+      outcome: isEn ? 'Outcome · Phase-one scope & KPIs' : 'Kết quả · Phạm vi & KPI giai đoạn đầu'
     },
     {
       num: '03',
-      title: isEn ? 'Confirm the framework' : 'Chuẩn hóa khung hợp tác',
+      title: isEn ? 'Commit to the journey' : 'Cam kết đồng hành',
       icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
       desc: isEn
-        ? 'Delivery model, timeline, governance and commercial terms agreed for a long-term partnership rather than a one-off project.'
-        : 'Mô hình triển khai, lộ trình, quản trị và các điều khoản thương mại được thống nhất cho mối quan hệ đối tác chiến lược dài hạn.'
+        ? 'Delivery model, roadmap, governance and commercial terms agreed up front — the foundation of a long-term partnership, not a one-off project.'
+        : 'Thống nhất mô hình triển khai, lộ trình, cơ chế quản trị và điều khoản hợp tác — đặt nền móng cho mối quan hệ đối tác lâu dài, không chỉ là một dự án đơn lẻ.',
+      outcome: isEn ? 'Outcome · Long-term partnership roadmap' : 'Kết quả · Lộ trình hợp tác dài hạn'
     }
   ];
 
@@ -170,12 +173,12 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15] mb-4">
-          {isEn ? 'Three Short Steps to Scaled Impact' : 'Ba Bước Ngắn Gọn Để Tạo Đột Phá Quy Mô'}
+          {isEn ? 'Three Steps to Start. A Partnership Built to Scale.' : 'Ba Bước Khởi Đầu, Một Hành Trình Bứt Phá'}
         </h2>
         <p className="text-zinc-400 text-base sm:text-lg max-w-3xl leading-relaxed mb-12">
           {isEn
-            ? 'From first conversation to a scoped, funded first phase with measurable numbers.'
-            : 'Từ cuộc trao đổi đầu tiên đến giai đoạn triển khai có phạm vi rõ ràng cùng các chỉ số đo lường chuẩn xác.'}
+            ? 'From the first conversation to a clearly scoped, funded first phase — with results you can measure in numbers.'
+            : 'Từ buổi trò chuyện đầu tiên đến giai đoạn triển khai đầu tiên — phạm vi rõ ràng, ngân sách minh bạch và kết quả đo đếm được bằng con số.'}
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -204,7 +207,7 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
               </div>
 
               <div className="pt-6 mt-6 border-t border-white/5 text-[11px] font-mono text-zinc-500">
-                {isEn ? `Phase 0${idx + 1} Delivery Alignment` : `Giai đoạn 0${idx + 1} Thống nhất mục tiêu`}
+                {step.outcome}
               </div>
             </div>
           ))}
@@ -214,17 +217,17 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
         <div className="p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 to-zinc-950 border border-emerald-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <p className="text-sm text-zinc-200 leading-relaxed max-w-3xl">
             <strong className="text-white">
-              {isEn ? 'With the right digital foundation:' : 'Với nền tảng kỹ thuật số chuẩn xác:'}
+              {isEn ? 'The right digital foundation is a launchpad for growth:' : 'Nền tảng số vững chắc là bệ phóng cho tăng trưởng:'}
             </strong>{' '}
             {isEn
-              ? 'you achieve elevated operational velocity, seamless customer and employee touchpoints, and resilient systems engineered to scale.'
-              : 'doanh nghiệp tối ưu hóa hiệu suất vận hành, mang đến trải nghiệm khách hàng và nhân viên liền mạch, cùng hạ tầng sẵn sàng mở rộng bền vững.'}
+              ? 'faster, leaner operations, seamless experiences for customers and employees alike, and systems ready to scale as you grow.'
+              : 'vận hành nhanh và hiệu quả hơn, trải nghiệm liền mạch cho cả khách hàng lẫn nhân viên, cùng một hệ thống sẵn sàng mở rộng khi doanh nghiệp lớn mạnh.'}
           </p>
           <a
             href="#contact"
             className="px-6 py-3 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors whitespace-nowrap flex items-center gap-2 cursor-pointer"
           >
-            <span>{isEn ? 'Start Phase 01' : 'Bắt đầu Bước 01'}</span>
+            <span>{isEn ? 'Start the conversation' : 'Bắt đầu trò chuyện'}</span>
             <ArrowRight className="w-3.5 h-3.5" />
           </a>
         </div>
