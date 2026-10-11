@@ -294,21 +294,30 @@ export const SolutionsSection: React.FC<SolutionsSectionProps> = ({ lang = 'VI' 
 
         {/* Tabs of Solutions */}
         <ScrollReveal delay={120} distance={18} blur={8}>
-          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-thin">
-            {solutions.map((sol) => (
-              <button
-                key={sol.id}
-                onClick={() => setActiveSolution(sol.id)}
-                className={`px-4 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all cursor-pointer border flex items-center gap-2 shrink-0 ${
-                  activeSolution === sol.id
-                    ? 'bg-emerald-500/15 border-emerald-500/60 text-white'
-                    : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:text-white hover:bg-white/[0.05]'
-                }`}
-              >
-                <span>{sol.icon}</span>
-                <span>{sol.title}</span>
-              </button>
-            ))}
+          {/* All deployments visible at once in a wrapping grid (no horizontal scrolling) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 mb-8" role="tablist">
+            {solutions.map((sol) => {
+              const isActive = activeSolution === sol.id;
+              return (
+                <button
+                  key={sol.id}
+                  role="tab"
+                  aria-selected={isActive}
+                  onClick={() => setActiveSolution(sol.id)}
+                  className={`relative flex items-center gap-3 p-3 sm:p-3.5 rounded-xl text-left border transition-all cursor-pointer overflow-hidden ${
+                    isActive
+                      ? 'bg-emerald-500/10 border-emerald-500/50 text-white'
+                      : 'bg-white/[0.02] border-white/10 text-zinc-400 hover:text-white hover:border-white/20 hover:bg-white/[0.04]'
+                  }`}
+                >
+                  <span className={`hidden min-[420px]:flex w-9 h-9 shrink-0 rounded-lg items-center justify-center border ${isActive ? 'bg-emerald-500/15 border-emerald-500/30' : 'bg-white/[0.03] border-white/10'}`}>
+                    {sol.icon}
+                  </span>
+                  <span className="text-xs sm:text-[13px] font-semibold leading-snug line-clamp-3 lg:line-clamp-2">{sol.title}</span>
+                  {isActive && <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-emerald-400" aria-hidden="true" />}
+                </button>
+              );
+            })}
           </div>
         </ScrollReveal>
 

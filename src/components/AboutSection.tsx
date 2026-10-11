@@ -209,12 +209,11 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang = 'VI' }) => {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] text-zinc-400">
+                  <div className="pt-3 border-t border-white/10 flex items-center text-[11px] text-zinc-400">
                     <span className="flex items-center gap-1.5">
                       <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
                       Vietnam · Australia · USA · Korea
                     </span>
-                    <span className="font-mono text-emerald-400 font-bold">2026 EDITION</span>
                   </div>
                 </div>
               </ScrollReveal>

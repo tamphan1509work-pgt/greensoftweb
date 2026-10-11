@@ -36,7 +36,6 @@ interface ProductsSectionProps {
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' }) => {
-  const [activeCategory, setActiveCategory] = useState<'all' | 'ops' | 'biz'>('all');
   const [index, setIndex] = useState(0);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [isPaused, setIsPaused] = useState(false); // explicit pause button
@@ -44,7 +43,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
   const [isInView, setIsInView] = useState(false);
   const [elapsed, setElapsed] = useState(0); // ms spent on the current slide while running
   const sectionRef = useRef<HTMLElement>(null);
-  const stripRef = useRef<HTMLDivElement>(null);
   const touchStartX = useRef<number | null>(null);
   const isEn = lang === 'EN';
 
@@ -534,11 +532,8 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
     }
   ];
 
-  const filtered = activeCategory === 'all'
-    ? products
-    : products.filter(p => p.category === activeCategory);
-  const total = filtered.length;
-  const current = filtered[Math.min(index, total - 1)];
+  const total = products.length;
+  const current = products[index];
   const isRunning = !isPaused && !isHovered && isInView;
 
   const goTo = (next: number, dir: 1 | -1) => {
@@ -548,13 +543,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
   };
   const next = () => goTo(index + 1, 1);
   const prev = () => goTo(index - 1, -1);
-
-  const changeCategory = (cat: 'all' | 'ops' | 'biz') => {
-    setActiveCategory(cat);
-    setDirection(1);
-    setElapsed(0);
-    setIndex(0);
-  };
 
   // Auto-advance timer; pauses on hover, via the pause button or when off screen
   useEffect(() => {
@@ -576,14 +564,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
     return () => io.disconnect();
   }, []);
 
-  // Keep the active product chip visible inside the strip (scrolls the strip only, not the page)
-  useEffect(() => {
-    const strip = stripRef.current;
-    const chip = strip?.querySelector<HTMLElement>(`[data-index="${index}"]`);
-    if (!strip || !chip) return;
-    strip.scrollTo({ left: chip.offsetLeft - strip.clientWidth / 2 + chip.clientWidth / 2, behavior: 'smooth' });
-  }, [index, activeCategory]);
-
   const onKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
     if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
@@ -600,12 +580,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
     cat === 'ops'
       ? (isEn ? 'Operations & Engagement' : 'Vận hành & Tương tác')
       : (isEn ? 'Marketing, Data & Business' : 'Marketing, Dữ liệu & Kinh doanh');
-
-  const tabs: { key: 'all' | 'ops' | 'biz'; label: string }[] = [
-    { key: 'all', label: isEn ? 'All · 20' : 'Tất cả · 20' },
-    { key: 'ops', label: isEn ? 'Operations · 8' : 'Vận hành · 8' },
-    { key: 'biz', label: isEn ? 'Business · 12' : 'Kinh doanh · 12' },
-  ];
 
   return (
     <section ref={sectionRef} id="features" className="relative py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-white/10">
@@ -627,21 +601,6 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
           </p>
         </div>
 
-        <div className="flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/10 self-start lg:self-auto" role="tablist">
-          {tabs.map(tab => (
-            <button
-              key={tab.key}
-              role="tab"
-              aria-selected={activeCategory === tab.key}
-              onClick={() => changeCategory(tab.key)}
-              className={`px-4 py-2 rounded-full text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
-                activeCategory === tab.key ? 'bg-white text-black font-semibold' : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
       </div>
 
       <ScrollReveal delay={120} distance={28}>
@@ -661,7 +620,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
           <div className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(closest-side, rgba(16,185,129,0.14), transparent)' }} aria-hidden="true" />
 
           <div
-            key={`${activeCategory}-${current.id}`}
+            key={current.id}
             className="product-slide relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 p-5 sm:p-8 lg:p-12"
             style={{ '--slide-from': `${direction * 32}px` } as React.CSSProperties}
             aria-live={isRunning ? 'off' : 'polite'}
@@ -765,26 +724,20 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
         </div>
       </ScrollReveal>
 
-      {/* Product strip: jump straight to any product */}
-      <div
-        ref={stripRef}
-        className="mt-5 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.15)_transparent]"
-      >
-        {filtered.map((prod, i) => (
+      {/* Slide indicators: one dot per product, wraps instead of scrolling */}
+      <div className="mt-6 flex flex-wrap justify-center gap-2" role="tablist" aria-label={isEn ? 'Choose a product' : 'Chọn sản phẩm'}>
+        {products.map((prod, i) => (
           <button
             key={prod.id}
-            data-index={i}
+            role="tab"
+            aria-selected={i === index}
+            aria-label={prod.name}
+            title={prod.name}
             onClick={() => goTo(i, i >= index ? 1 : -1)}
-            aria-current={i === index}
-            className={`shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs transition-colors cursor-pointer whitespace-nowrap ${
-              i === index
-                ? 'border-emerald-500/50 bg-emerald-500/10 text-white'
-                : 'border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white hover:border-white/25'
+            className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+              i === index ? 'w-8 bg-emerald-400' : 'w-2 bg-white/20 hover:bg-white/50'
             }`}
-          >
-            <span className={`w-1.5 h-1.5 rounded-full ${i === index ? 'bg-emerald-400' : 'bg-white/20'}`} aria-hidden="true" />
-            {prod.name}
-          </button>
+          />
         ))}
       </div>
     </section>
