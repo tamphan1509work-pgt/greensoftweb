@@ -124,7 +124,7 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang = 'VI' }) => {
                   </div>
                   <div>
                     <h5 className="text-xs font-bold text-white uppercase tracking-wider">
-                      {isEn ? 'Delivered across four countries' : 'Dấu ấn triển khai đa quốc gia'}
+                      {isEn ? 'Multinational expert team' : 'Đội ngũ chuyên gia đa quốc gia'}
                     </h5>
                     <p className="text-[11px] text-zinc-400">
                       {isEn ? 'Vietnam · Australia · United States · Korea' : 'Việt Nam · Úc · Hoa Kỳ · Hàn Quốc'}
