@@ -1,4 +1,5 @@
 import React from 'react';
+import { Menu } from 'lucide-react';
 import { GreensoftLogo, GreensoftWordmark } from './GreensoftLogo';
 import { Language, translations } from '../i18n/translations';
 
@@ -9,6 +10,8 @@ interface StickyNavProps {
   onToggleLang?: (lang: Language) => void;
   onNavigateToAbout?: () => void;
   onNavigateToHero?: () => void;
+  /** Opens the mobile menu overlay */
+  onOpenMenu?: () => void;
 }
 
 export const StickyNav: React.FC<StickyNavProps> = ({ 
@@ -17,6 +20,7 @@ export const StickyNav: React.FC<StickyNavProps> = ({
   onToggleLang,
   onNavigateToAbout,
   onNavigateToHero,
+  onOpenMenu,
 }) => {
   const t = translations[lang];
 
@@ -117,6 +121,17 @@ export const StickyNav: React.FC<StickyNavProps> = ({
           >
             {t.nav.getInTouch}
           </a>
+
+          {onOpenMenu && (
+            <button
+              type="button"
+              onClick={onOpenMenu}
+              aria-label={lang === 'EN' ? 'Open menu' : 'Mở menu'}
+              className="md:hidden w-10 h-10 rounded-full border border-white/15 bg-white/[0.06] text-white flex items-center justify-center cursor-pointer"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </div>
     </nav>

@@ -603,20 +603,26 @@ nav.menu {
   box-sizing: border-box;
 }
 
-/* While the menu is open, lift the topbar above it so the close button stays
-   tappable, and hide the rest of the topbar (the menu shows its own header). */
-.stage.is-open header.topbar {
-  z-index: 55;
-}
-.stage.is-open header.topbar > *:not(.burger) {
-  visibility: hidden;
-}
-
-/* Menu header shares the topbar row; leave room for the close (burger) button */
+/* The menu has its own header and close button */
 .menu-head {
   min-height: calc(44 * var(--m));
-  margin-right: calc(56 * var(--m));
   margin-bottom: calc(36 * var(--m)) !important;
+}
+
+.menu-close {
+  width: calc(44 * var(--m));
+  height: calc(44 * var(--m));
+  min-width: 40px;
+  min-height: 40px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+  cursor: pointer;
 }
 
 .stage.is-open nav.menu {

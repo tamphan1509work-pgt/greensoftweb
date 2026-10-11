@@ -32,16 +32,16 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
   const customers = [
     // Row 1: Strategic Enterprise Clients (Top Row of Image)
     { id: 'nhg', name: 'NHG - Nguyen Hoang Group', sector: isEn ? 'Education Group' : 'Tập đoàn Giáo dục' },
-    { id: 'gia-dinh', name: 'Gia Dinh University', sector: isEn ? 'Higher Education' : 'Viện Đại học' },
+    { id: 'gia-dinh', name: 'Gia Dinh University', sector: isEn ? 'University' : 'Trường Đại học' },
     { id: 'masterise-homes', name: 'Masterise Homes', sector: isEn ? 'Luxury Real Estate' : 'Bất động sản cao cấp' },
     { id: 'druce', name: 'Druce Real Estate', sector: isEn ? 'Global Property' : 'Bất động sản quốc tế' },
     { id: 'millennia', name: 'Millennia Education', sector: isEn ? 'Education' : 'Tập đoàn Giáo dục' },
-    { id: 'modale', name: 'Modale European Luxury', sector: isEn ? 'Luxury Living' : 'Nội thất & Không gian sống' },
+    { id: 'modale', name: 'Modale European Luxury', sector: isEn ? 'Furniture' : 'Nội thất' },
     // Row 2: Technology, Security & Investment (Bottom Row of Image)
-    { id: 'imes-pro', name: 'IMES PRO', sector: isEn ? 'Industrial Solutions' : 'Giải pháp công nghiệp' },
+    { id: 'imes-pro', name: 'IMES PRO', sector: isEn ? 'Manufacturing Solutions' : 'Giải pháp sản xuất' },
     { id: 'smartland', name: 'Smartland Real Estate', sector: isEn ? 'Property Distribution' : 'Phân phối Bất động sản' },
     { id: 'inmatech', name: 'INMATECH', sector: isEn ? 'Technology & Automation' : 'Công nghệ & Tự động hóa' },
-    { id: 'stormbird', name: 'Stormbird', sector: isEn ? 'Maritime & Logistics' : 'Hàng hải & Logistics' },
+    { id: 'stormbird', name: 'Stormbird', sector: isEn ? 'Cybersecurity' : 'An ninh mạng' },
     { id: 'tsp', name: 'TSP - Total Service Provider', sector: isEn ? 'Facility & Security' : 'Dịch vụ & An ninh' },
     { id: 'we-angels', name: 'WeAngels Capital', sector: isEn ? 'Venture Investment' : 'Quỹ Đầu tư Khởi nghiệp' }
   ];
@@ -125,7 +125,7 @@ export const PartnersAndEngagement: React.FC<PartnersAndEngagementProps> = ({ la
                   <div className="w-full h-12 flex items-center justify-center transition-transform group-hover:scale-105">
                     <CustomerBrandLogo id={client.id} name={client.name} />
                   </div>
-                  <span className="text-[10px] text-zinc-500 mt-2 font-mono font-medium line-clamp-1">
+                  <span className="text-[10px] text-zinc-500 mt-2 font-medium leading-snug">
                     {client.sector}
                   </span>
                 </div>

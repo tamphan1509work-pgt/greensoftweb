@@ -124,20 +124,22 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang = 'VI' }) => {
                   </div>
                   <div>
                     <h5 className="text-xs font-bold text-white uppercase tracking-wider">
-                      {isEn ? 'Global Deployment Footprint' : 'Hạ tầng triển khai toàn cầu'}
+                      {isEn ? 'Delivered across four countries' : 'Dấu ấn triển khai đa quốc gia'}
                     </h5>
-                    <p className="text-[11px] text-zinc-400">Vietnam · Australia · United States · Korea</p>
+                    <p className="text-[11px] text-zinc-400">
+                      {isEn ? 'Vietnam · Australia · United States · Korea' : 'Việt Nam · Úc · Hoa Kỳ · Hàn Quốc'}
+                    </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-xs font-mono">
-                  <div className="text-right">
-                    <div className="text-emerald-400 font-bold">AI Portfolio</div>
-                    <div className="text-[10px] text-zinc-500">{isEn ? 'Commercial Ready' : 'Thương mại hóa'}</div>
+                <div className="flex items-center gap-4 text-xs">
+                  <div className="sm:text-right">
+                    <div className="text-emerald-400 font-bold text-sm">{isEn ? '20 AI products' : '20 sản phẩm AI'}</div>
+                    <div className="text-[10px] text-zinc-500">{isEn ? 'Running in production' : 'Đang vận hành thực tế'}</div>
                   </div>
                   <div className="w-[1px] h-8 bg-white/10" />
-                  <div className="text-right">
-                    <div className="text-white font-bold">7+ Sectors</div>
-                    <div className="text-[10px] text-zinc-500">{isEn ? 'Deployed' : 'Đã triển khai'}</div>
+                  <div className="sm:text-right">
+                    <div className="text-white font-bold text-sm">{isEn ? '7+ industries' : '7+ lĩnh vực'}</div>
+                    <div className="text-[10px] text-zinc-500">{isEn ? 'Already served' : 'Đã triển khai'}</div>
                   </div>
                 </div>
               </div>

@@ -18,7 +18,7 @@ import { ScrollReveal } from './components/ScrollReveal';
 import { SectionDivider } from './components/SectionDivider';
 import { AnimatedMetric } from './components/AnimatedMetric';
 import { FloatingScrollIndicator } from './components/FloatingScrollIndicator';
-import { ChevronDown, Globe } from 'lucide-react';
+import { ChevronDown, Globe, X } from 'lucide-react';
 import { Language, translations } from './i18n/translations';
 
 export default function App() {
@@ -166,6 +166,7 @@ export default function App() {
       <StickyNav 
         isVisible={isScrolled} 
         onOpenModal={(type) => openModal(type)}
+        onOpenMenu={() => setIsMenuOpen(true)}
         lang={lang}
         onToggleLang={(newLang) => setLang(newLang)}
         onNavigateToAbout={triggerAboutDepthZoom}
@@ -287,8 +288,8 @@ export default function App() {
         {/* Mobile Overlay Menu */}
         <nav className="menu" id="menu" aria-hidden={!isMenuOpen}>
           <div className="menu-inner">
-            <div className="menu-head flex items-center justify-between mb-6">
-              <div className="flex items-center gap-3">
+            <div className="menu-head flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mr-auto">
                 <GreensoftLogo variant="emblem" size={38} />
                 <GreensoftWordmark fontSize={18} />
               </div>
@@ -310,6 +311,16 @@ export default function App() {
                   VI
                 </button>
               </div>
+
+              {/* Close button lives inside the menu so it works at any scroll position */}
+              <button
+                type="button"
+                className="menu-close"
+                aria-label={lang === 'EN' ? 'Close menu' : 'Đóng menu'}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
             <ul className="menu-list">
