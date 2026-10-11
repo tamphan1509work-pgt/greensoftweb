@@ -41,8 +41,8 @@ export const AboutSection: React.FC<AboutSectionProps> = ({ lang = 'VI' }) => {
               <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
                 <strong className="text-white font-semibold">GreenSoftits</strong>{' '}
                 {isEn 
-                  ? 'transforms Generative AI, Large Language Models, and connected IoT systems into production-grade solutions — automating workflows, ensuring precision telemetry, and amplifying enterprise advantage every day.'
-                  : 'chuyển hóa Generative AI, Large Language Models và hệ thống IoT kết nối thành sản phẩm thực chiến — vận hành tự động, đo lường chuẩn xác và gia tăng lợi thế cạnh tranh mỗi ngày.'}
+                  ? 'turns Generative AI, Large Language Models and connected IoT into software that runs real businesses — not pilots, but products that are deployed, measured and improved every day to build a lasting competitive edge.'
+                  : 'biến Generative AI, mô hình ngôn ngữ lớn và IoT thành những sản phẩm vận hành thật trong doanh nghiệp — không dừng ở thử nghiệm, mà được triển khai, đo lường và cải tiến mỗi ngày để tạo nên lợi thế cạnh tranh bền vững.'}
               </p>
             </ScrollReveal>
 

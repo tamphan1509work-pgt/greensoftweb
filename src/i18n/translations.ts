@@ -46,7 +46,7 @@ export const translations: Record<Language, Translations> = {
       kickerSub: 'Applied AI Platform',
       headlineLine1: 'Make It Different',
       headlineLine2: 'with Applied AI',
-      sub: 'Generative AI · Large Language Models · IoT — engineered into high-performance enterprise systems that automate workflows, secure digital operations, and convert telemetry into competitive advantage.',
+      sub: 'Generative AI · Large Language Models · IoT — brought together into working products that automate operations, protect your platforms and turn data into confident decisions.',
       ctaPrimary: 'Get in Touch',
       ctaSecondary: 'Explore Products',
       metrics: {
@@ -74,10 +74,10 @@ export const translations: Record<Language, Translations> = {
     },
     hero: {
       kickerTag: 'GreenSoftits Co.,Ltd',
-      kickerSub: 'Nền tảng Trí tuệ nhân tạo Ứng dụng',
-      headlineLine1: 'Khác biệt vượt trội',
-      headlineLine2: 'với Applied AI',
-      sub: 'Generative AI · Large Language Models · IoT — kiến trúc thành giải pháp doanh nghiệp thực chiến giúp tự động hóa quy trình, bảo vệ nền tảng và biến dữ liệu thành quyết định chuẩn xác.',
+      kickerSub: 'Ứng dụng nền tảng Trí tuệ nhân tạo',
+      headlineLine1: 'Kiến tạo khác biệt',
+      headlineLine2: 'bằng AI thực chiến',
+      sub: 'Generative AI · Large Language Models · IoT — hội tụ thành những sản phẩm vận hành thực tế, giúp doanh nghiệp tự động hóa quy trình, bảo vệ hệ thống và biến dữ liệu thành quyết định sáng suốt.',
       ctaPrimary: 'Liên hệ hợp tác',
       ctaSecondary: 'Khám phá sản phẩm',
       metrics: {

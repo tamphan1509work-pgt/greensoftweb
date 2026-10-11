@@ -223,7 +223,9 @@ export default function App() {
             title="GreenSoftits Co.,Ltd · Make It Different"
           >
             <GreensoftLogo variant="emblem" size={54} />
-            <GreensoftWordmark fontSize={24} />
+            {/* Smaller wordmark on phones so it clears the language toggle */}
+            <span className="hidden min-[480px]:block"><GreensoftWordmark fontSize={24} /></span>
+            <span className="min-[480px]:hidden"><GreensoftWordmark fontSize={16} /></span>
           </a>
 
           {/* Centered: Menu Links (About, Products, Recruitment, Contact) */}
@@ -397,6 +399,7 @@ export default function App() {
           label={t.hero.scrollCue} 
           targetId="about" 
           onNavigate={triggerAboutDepthZoom}
+          className="hidden sm:block"
         />
       </div>
 
