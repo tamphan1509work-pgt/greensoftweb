@@ -27,6 +27,30 @@ interface ProductItem {
   deployedFor?: string;
 }
 
+/** Order in which products appear in the carousel (by slug) */
+const DISPLAY_ORDER = [
+  'smart-crm',
+  'call-center',
+  'omni-channel-chat',
+  'ai-chatbot',
+  'virtual-assistant',
+  'personalised-campaigns',
+  'social-listening',
+  'multimedia-management',
+  'multi-social-posting',
+  'crisis-management',
+  'edutech',
+  'hrms',
+  'property-management',
+  'ai-valuation',
+  'home-toolkits',
+  'smart-factory',
+  'bot-management',
+  'smart-supermarket',
+  'anomaly-detection',
+  'custom-ai',
+];
+
 /** How long each product stays on screen before auto-advancing */
 const SLIDE_MS = 7000;
 const TICK_MS = 100;
@@ -46,7 +70,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
   const touchStartX = useRef<number | null>(null);
   const isEn = lang === 'EN';
 
-  const products: ProductItem[] = [
+  const catalogue: ProductItem[] = [
     // --- Operations, Security & Customer Engagement (brochure p.05) ---
     {
       id: '01',
@@ -531,6 +555,10 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
       deployedFor: isEn ? 'Any industry' : 'Mọi lĩnh vực'
     }
   ];
+
+  const products = [...catalogue].sort(
+    (a, b) => DISPLAY_ORDER.indexOf(a.slug) - DISPLAY_ORDER.indexOf(b.slug),
+  );
 
   const total = products.length;
   const current = products[index];
