@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { GreensoftLogo } from './GreensoftLogo';
 import { Mail, Globe, MapPin, Send, CheckCircle, Clock, Sparkles } from 'lucide-react';
 import { Language } from '../i18n/translations';
+import contactRobot from '../assets/contact-robot.png';
 
 interface ContactSectionProps {
   lang?: Language;
@@ -51,15 +52,33 @@ export const ContactSection: React.FC<ContactSectionProps> = ({ lang = 'VI' }) =
         <span>{isEn ? "Let's Build The Future Together" : 'Cùng Nhau Kiến Tạo Tương Lai'}</span>
       </div>
 
-      <div className="max-w-3xl mb-12">
-        <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15]">
-          {isEn ? 'Get in Touch' : 'Liên Hệ Hợp Tác'}
-        </h2>
-        <p className="text-zinc-300 text-base sm:text-lg mt-4 leading-relaxed font-medium">
-          {isEn
-            ? 'Tell us the process that costs you the most time today. We will come back with what is possible, what it takes, and what it is worth.'
-            : 'Chia sẻ quy trình đang tiêu tốn nhiều thời gian nhất của bạn hôm nay. Chúng tôi sẽ phản hồi những gì khả thi, lộ trình thực hiện và giá trị định lượng mang lại.'}
-        </p>
+      <div className="flex flex-col-reverse sm:flex-row sm:items-end sm:justify-between gap-6 mb-12">
+        <div className="max-w-3xl">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15]">
+            {isEn ? 'Get in Touch' : 'Liên Hệ Hợp Tác'}
+          </h2>
+          <p className="text-zinc-300 text-base sm:text-lg mt-4 leading-relaxed font-medium">
+            {isEn
+              ? 'Tell us the process that costs you the most time today. We will come back with what is possible, what it takes, and what it is worth.'
+              : 'Chia sẻ quy trình đang tiêu tốn nhiều thời gian nhất của bạn hôm nay. Chúng tôi sẽ phản hồi những gì khả thi, lộ trình thực hiện và giá trị định lượng mang lại.'}
+          </p>
+        </div>
+
+        {/* Greensoft AI assistant mascot */}
+        <div className="relative shrink-0 self-center sm:self-end w-36 sm:w-44 lg:w-56 -mb-4 pointer-events-none select-none">
+          <div
+            className="absolute -inset-6"
+            style={{ background: 'radial-gradient(closest-side, rgba(16,185,129,0.22), rgba(16,185,129,0) 100%)' }}
+            aria-hidden="true"
+          />
+          <img
+            src={contactRobot}
+            alt={isEn ? 'Greensoft AI assistant robot' : 'Robot trợ lý AI Greensoft'}
+            loading="lazy"
+            draggable={false}
+            className="contact-robot relative w-full h-auto drop-shadow-[0_18px_30px_rgba(16,185,129,0.25)]"
+          />
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">

@@ -1223,3 +1223,12 @@ iframe[loading="lazy"] {
   content-visibility: auto;
 }
 
+
+/* Contact section mascot: gentle hover float */
+@keyframes contactRobotFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .contact-robot { animation: contactRobotFloat 4.5s ease-in-out infinite; }
+}
