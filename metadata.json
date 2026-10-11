@@ -1,0 +1,8 @@
+{
+  "name": "Greensoft AI - The Next Layer of Intelligence",
+  "description": "A unified AI infrastructure platform by Greensoft to help teams build, ship, and scale enterprise AI systems with confidence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
