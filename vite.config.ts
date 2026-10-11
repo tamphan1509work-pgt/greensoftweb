@@ -8,6 +8,15 @@ export default defineConfig(() => {
     // Sub-path the site is served from (e.g. /greensoftweb/ on GitHub Pages)
     base: process.env.VITE_BASE || '/',
     plugins: [react(), tailwindcss()],
+    build: {
+      rollupOptions: {
+        // Homepage plus the standalone careers page
+        input: {
+          main: path.resolve(__dirname, 'index.html'),
+          careers: path.resolve(__dirname, 'careers.html'),
+        },
+      },
+    },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, '.'),

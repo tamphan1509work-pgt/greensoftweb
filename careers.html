@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <script>
+      /* Ensure window.fetch has both getter and setter so external runner/extension scripts can safely wrap it */
+      (function() {
+        try {
+          var origFetch = (typeof window.fetch === 'function') ? window.fetch.bind(window) : null;
+          Object.defineProperty(window, 'fetch', {
+            get: function() { return origFetch; },
+            set: function(fn) { origFetch = fn; },
+            configurable: true,
+            enumerable: true
+          });
+        } catch (e) {
+          try {
+            var protoFetch = Window.prototype.fetch;
+            Object.defineProperty(Window.prototype, 'fetch', {
+              get: function() { return protoFetch; },
+              set: function(fn) { protoFetch = fn; },
+              configurable: true,
+              enumerable: true
+            });
+          } catch (e2) {}
+        }
+      })();
+    </script>
+    <title>Tuyển dụng · GreenSoft</title>
+    <meta name="description" content="Cơ hội nghề nghiệp tại GreenSoft: AI-Native Software Engineer — ERPNext, AI-Assisted Development, AI Transformation." />
+    <meta property="og:title" content="Tuyển dụng · GreenSoft" />
+    <meta property="og:description" content="AI-Native Software Engineer — 20 vị trí, lương từ 20 triệu VNĐ/tháng. Chào đón sinh viên năm cuối." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <!-- Google Fonts: Manrope (200-800) and script font for Greensoft slogan -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Herr+Von+Muellerhoff&family=Montserrat:wght@500;600&family=Manrope:wght@200..800&family=Plus+Jakarta+Sans:wght@700;800&display=swap" rel="stylesheet" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><defs><linearGradient id='g' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23a1c84d'/><stop offset='.58' stop-color='%23539c44'/><stop offset='1' stop-color='%23489545'/></linearGradient><clipPath id='c'><rect x='11.5' y='11.5' width='105' height='105' rx='26' transform='rotate(45 64 64)'/></clipPath></defs><rect x='11.5' y='11.5' width='105' height='105' rx='26' transform='rotate(45 64 64)' fill='url(%23g)'/><g clip-path='url(%23c)' stroke='white' stroke-linecap='round' fill='none'><path d='M64 44.5V140' stroke-width='6' stroke-linecap='butt'/><path d='M54.5 62L64 71.5M73.5 62L64 71.5M38.5 78L64 103.5M89.5 78L64 103.5' stroke-width='6'/><g stroke-width='6'><circle cx='64' cy='36' r='6.5'/><circle cx='48.5' cy='56' r='6.5'/><circle cx='79.5' cy='56' r='6.5'/><circle cx='32.5' cy='72' r='6.5'/><circle cx='95.5' cy='72' r='6.5'/></g></g></svg>" />
+  </head>
+  <body class="bg-[#050505] text-[#fafafa] antialiased overflow-x-hidden">
+    <div id="root"></div>
+    <script type="module" src="/src/careers/main.tsx"></script>
+  </body>
+</html>

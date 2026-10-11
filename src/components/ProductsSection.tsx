@@ -607,25 +607,23 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
     { key: 'biz', label: isEn ? 'Business · 12' : 'Kinh doanh · 12' },
   ];
 
-  const pad = (n: number) => String(n).padStart(2, '0');
-
   return (
     <section ref={sectionRef} id="features" className="relative py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-white/10">
       <div className="flex items-center gap-3 text-xs tracking-widest uppercase text-emerald-400 font-semibold mb-6">
         <span>02</span>
         <span className="w-8 h-[1px] bg-emerald-400/40"></span>
-        <span>{isEn ? 'AI Product Ecosystem' : 'Hệ Sinh Thái Sản Phẩm AI'}</span>
+        <span>{isEn ? 'Products & Solutions' : 'Sản Phẩm & Giải Pháp'}</span>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
         <div className="max-w-2xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15]">
-            {isEn ? 'One Platform, Twenty AI Products' : 'Một Nền Tảng, 20 Sản Phẩm AI'}
+            {isEn ? <>An AI Ecosystem Built to <span className="text-emerald-400 sm:block">Make It Different</span></> : <>Hệ Sinh Thái AI <span className="text-emerald-400 sm:block">Kiến Tạo Khác Biệt</span></>}
           </h2>
           <p className="text-zinc-400 text-base sm:text-lg mt-4 leading-relaxed">
             {isEn
-              ? 'From security and operations to marketing, data and business systems — all running on the same GreenSoft platform.'
-              : 'Từ an ninh, vận hành đến marketing, dữ liệu và nền tảng kinh doanh — tất cả vận hành trên cùng một nền tảng GreenSoft.'}
+              ? 'Twenty AI products and solutions already running in production — from security and operations to marketing, data and business — on one GreenSoft platform.'
+              : '20 sản phẩm và giải pháp AI đã vận hành thực tế — từ an ninh, vận hành đến marketing, dữ liệu và kinh doanh — hội tụ trên một nền tảng GreenSoft duy nhất.'}
           </p>
         </div>
 
@@ -688,15 +686,9 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
 
             {/* Content */}
             <div className="lg:col-span-5 order-2 flex flex-col">
-              <div className="flex items-center gap-3 mb-5">
-                <span className="font-mono text-4xl sm:text-5xl font-light text-white/90 leading-none tabular-nums">
-                  {pad(index + 1)}
-                </span>
-                <span className="font-mono text-sm text-zinc-500 self-end mb-1">/ {pad(total)}</span>
-                <span className="ml-auto text-[11px] px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 whitespace-nowrap">
-                  {categoryLabel(current.category)}
-                </span>
-              </div>
+              <span className="self-start mb-5 text-[11px] px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 whitespace-nowrap">
+                {categoryLabel(current.category)}
+              </span>
 
               <div className="flex items-center gap-3 mb-3">
                 <span className="w-10 h-10 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
@@ -784,15 +776,13 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
             data-index={i}
             onClick={() => goTo(i, i >= index ? 1 : -1)}
             aria-current={i === index}
-            className={`shrink-0 flex items-center gap-2 pl-2 pr-3.5 py-2 rounded-full border text-xs transition-colors cursor-pointer whitespace-nowrap ${
+            className={`shrink-0 flex items-center gap-2 px-3.5 py-2 rounded-full border text-xs transition-colors cursor-pointer whitespace-nowrap ${
               i === index
                 ? 'border-emerald-500/50 bg-emerald-500/10 text-white'
                 : 'border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white hover:border-white/25'
             }`}
           >
-            <span className={`font-mono text-[10px] w-6 h-6 rounded-full flex items-center justify-center ${i === index ? 'bg-emerald-400 text-black' : 'bg-white/5 text-zinc-500'}`}>
-              {pad(i + 1)}
-            </span>
+            <span className={`w-1.5 h-1.5 rounded-full ${i === index ? 'bg-emerald-400' : 'bg-white/20'}`} aria-hidden="true" />
             {prod.name}
           </button>
         ))}
