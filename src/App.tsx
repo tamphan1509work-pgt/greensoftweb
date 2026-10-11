@@ -427,7 +427,7 @@ export default function App() {
         {/* Subtle semi-transparent horizontal gradient divider */}
         <SectionDivider />
 
-        {/* Section 02: Full 16 AI Products Portfolio */}
+        {/* Section 02: AI Products Portfolio */}
         <ProductsSection lang={lang} />
 
         {/* Subtle semi-transparent horizontal gradient divider */}

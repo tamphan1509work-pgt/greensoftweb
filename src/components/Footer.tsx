@@ -35,7 +35,7 @@ export const Footer: React.FC<FooterProps> = ({ lang = 'VI' }) => {
           © 2026 GreenSoftits Co.,Ltd. All rights reserved. · greensoftits.com · sales@greensoftits.com
         </div>
         <div className="flex items-center gap-6">
-          <span>{isEn ? '16 AI Production Systems' : '16 Hệ thống AI Thương mại'}</span>
+          <span>{isEn ? 'AI Production Systems' : 'Hệ thống AI Thương mại'}</span>
           <span>{isEn ? '7+ Industries Served' : '7+ Ngành công nghiệp'}</span>
           <span>{isEn ? '24/7 Intelligent Operations' : 'Vận hành thông minh 24/7'}</span>
         </div>

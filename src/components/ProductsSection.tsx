@@ -624,8 +624,8 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
           </h2>
           <p className="text-zinc-400 text-base sm:text-lg mt-4 leading-relaxed">
             {isEn
-              ? 'Twenty AI products and solutions already running in production — from security and operations to marketing, data and business — on one GreenSoft platform.'
-              : '20 sản phẩm và giải pháp AI đã vận hành thực tế — từ an ninh, vận hành đến marketing, dữ liệu và kinh doanh — hội tụ trên một nền tảng GreenSoft duy nhất.'}
+              ? 'AI products and solutions already running in production — from security and operations to marketing, data and business — on one GreenSoft platform.'
+              : 'Sản phẩm và giải pháp AI đã vận hành thực tế — từ an ninh, vận hành đến marketing, dữ liệu và kinh doanh — hội tụ trên một nền tảng GreenSoft duy nhất.'}
           </p>
         </div>
 
