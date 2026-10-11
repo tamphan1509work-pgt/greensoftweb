@@ -195,6 +195,10 @@ html, body {
           contrast(calc(var(--plate-video-contrast, 1.04) * var(--depth-zoom-contrast-mult, 1))) 
           saturate(var(--plate-video-saturate, 1.02));
   object-fit: cover;
+  /* Feather the video edges into the page background. The mask also clips the
+     outer glow, so no hard vertical seam shows between the text column and video. */
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 34%, #000 90%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 34%, #000 90%, transparent 100%);
   pointer-events: none;
   will-change: transform, opacity, filter, box-shadow;
   /* Dynamic box-shadow simulating portal energy */
@@ -342,6 +346,8 @@ html, body {
     transform: scale(var(--plate-video-scale, 1));
     object-fit: cover;
     object-position: 43% center;
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .plate::after {
