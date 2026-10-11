@@ -1,12 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { 
   ShieldAlert, Bot, Store, Factory, Headphones, MessageSquare, 
   MessageCircle, PhoneCall, Users2, Target, Radio, FolderSearch, 
   Share2, AlertTriangle, GraduationCap, Briefcase, ArrowRight, Check,
-  Building2, TrendingUp, Home, Sparkles
+  Building2, TrendingUp, Home, Sparkles, ChevronLeft, ChevronRight, Pause, Play
 } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
-import { LazyBlock } from './LazyBlock';
 import { Language } from '../i18n/translations';
 
 // Product illustrations cropped from the GreenSoft Company Brochure 2026, keyed by product slug
@@ -28,23 +27,25 @@ interface ProductItem {
   deployedFor?: string;
 }
 
+/** How long each product stays on screen before auto-advancing */
+const SLIDE_MS = 7000;
+const TICK_MS = 100;
+
 interface ProductsSectionProps {
   lang?: Language;
 }
 
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' }) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'ops' | 'biz'>('all');
-  const [selectedProductId, setSelectedProductId] = useState<string>('01');
-  const detailRef = useRef<HTMLDivElement>(null);
-
-  // On stacked (mobile/tablet) layouts the detail card sits below all 20 cards,
-  // so bring it into view after a selection.
-  const selectProduct = (id: string) => {
-    setSelectedProductId(id);
-    if (window.matchMedia('(max-width: 1023px)').matches) {
-      requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
-    }
-  };
+  const [index, setIndex] = useState(0);
+  const [direction, setDirection] = useState<1 | -1>(1);
+  const [isPaused, setIsPaused] = useState(false); // explicit pause button
+  const [isHovered, setIsHovered] = useState(false);
+  const [isInView, setIsInView] = useState(false);
+  const [elapsed, setElapsed] = useState(0); // ms spent on the current slide while running
+  const sectionRef = useRef<HTMLElement>(null);
+  const stripRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
   const isEn = lang === 'EN';
 
   const products: ProductItem[] = [
@@ -533,188 +534,269 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
     }
   ];
 
-  const filtered = activeCategory === 'all' 
-    ? products 
+  const filtered = activeCategory === 'all'
+    ? products
     : products.filter(p => p.category === activeCategory);
+  const total = filtered.length;
+  const current = filtered[Math.min(index, total - 1)];
+  const isRunning = !isPaused && !isHovered && isInView;
 
-  const selectedProduct = products.find(p => p.id === selectedProductId) || products[0];
+  const goTo = (next: number, dir: 1 | -1) => {
+    setDirection(dir);
+    setElapsed(0);
+    setIndex(((next % total) + total) % total);
+  };
+  const next = () => goTo(index + 1, 1);
+  const prev = () => goTo(index - 1, -1);
+
+  const changeCategory = (cat: 'all' | 'ops' | 'biz') => {
+    setActiveCategory(cat);
+    setDirection(1);
+    setElapsed(0);
+    setIndex(0);
+  };
+
+  // Auto-advance timer; pauses on hover, via the pause button or when off screen
+  useEffect(() => {
+    if (!isRunning) return;
+    const t = window.setInterval(() => setElapsed(e => e + TICK_MS), TICK_MS);
+    return () => window.clearInterval(t);
+  }, [isRunning]);
+
+  useEffect(() => {
+    if (elapsed >= SLIDE_MS) next();
+  }, [elapsed]);
+
+  // Only auto-advance while the section is on screen
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting), { threshold: 0.25 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
+
+  // Keep the active product chip visible inside the strip (scrolls the strip only, not the page)
+  useEffect(() => {
+    const strip = stripRef.current;
+    const chip = strip?.querySelector<HTMLElement>(`[data-index="${index}"]`);
+    if (!strip || !chip) return;
+    strip.scrollTo({ left: chip.offsetLeft - strip.clientWidth / 2 + chip.clientWidth / 2, behavior: 'smooth' });
+  }, [index, activeCategory]);
+
+  const onKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') { e.preventDefault(); next(); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  };
+
+  const onTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - touchStartX.current;
+    touchStartX.current = null;
+    if (Math.abs(dx) > 48) (dx < 0 ? next : prev)();
+  };
+
+  const categoryLabel = (cat: 'ops' | 'biz') =>
+    cat === 'ops'
+      ? (isEn ? 'Operations & Engagement' : 'Vận hành & Tương tác')
+      : (isEn ? 'Marketing, Data & Business' : 'Marketing, Dữ liệu & Kinh doanh');
+
+  const tabs: { key: 'all' | 'ops' | 'biz'; label: string }[] = [
+    { key: 'all', label: isEn ? 'All · 20' : 'Tất cả · 20' },
+    { key: 'ops', label: isEn ? 'Operations · 8' : 'Vận hành · 8' },
+    { key: 'biz', label: isEn ? 'Business · 12' : 'Kinh doanh · 12' },
+  ];
+
+  const pad = (n: number) => String(n).padStart(2, '0');
 
   return (
-    <section id="features" className="relative py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-white/10">
+    <section ref={sectionRef} id="features" className="relative py-28 px-6 sm:px-12 max-w-7xl mx-auto border-t border-white/10">
       <div className="flex items-center gap-3 text-xs tracking-widest uppercase text-emerald-400 font-semibold mb-6">
         <span>02</span>
         <span className="w-8 h-[1px] bg-emerald-400/40"></span>
-        <span>{isEn ? 'AI Product Ecosystem · 20 Products & Solutions' : 'Hệ Sinh Thái Sản Phẩm AI · 20 Sản Phẩm & Giải Pháp'}</span>
+        <span>{isEn ? 'AI Product Ecosystem' : 'Hệ Sinh Thái Sản Phẩm AI'}</span>
       </div>
 
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-10">
         <div className="max-w-2xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15]">
             {isEn ? 'One Platform, Twenty AI Products' : 'Một Nền Tảng, 20 Sản Phẩm AI'}
           </h2>
           <p className="text-zinc-400 text-base sm:text-lg mt-4 leading-relaxed">
             {isEn
-              ? 'Twenty products and solutions run as one platform: 8 for operations, security and customer engagement, and 12 for marketing, data intelligence and business systems.'
-              : '20 sản phẩm và giải pháp vận hành trên cùng một nền tảng: 8 giải pháp Vận hành, An ninh & Tương tác khách hàng và 12 giải pháp Marketing, Dữ liệu & Nền tảng kinh doanh.'}
+              ? 'From security and operations to marketing, data and business systems — all running on the same GreenSoft platform.'
+              : 'Từ an ninh, vận hành đến marketing, dữ liệu và nền tảng kinh doanh — tất cả vận hành trên cùng một nền tảng GreenSoft.'}
           </p>
         </div>
 
-        {/* Filter Pills */}
-        <ScrollReveal delay={120} distance={16}>
-          <div className="flex flex-wrap items-center gap-2 p-1 rounded-xl bg-zinc-900 border border-white/10 shrink-0">
+        <div className="flex items-center gap-1 p-1 rounded-full bg-white/[0.03] border border-white/10 self-start lg:self-auto" role="tablist">
+          {tabs.map(tab => (
             <button
-              onClick={() => setActiveCategory('all')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                activeCategory === 'all' 
-                  ? 'bg-white text-black font-semibold' 
-                  : 'text-zinc-400 hover:text-white'
+              key={tab.key}
+              role="tab"
+              aria-selected={activeCategory === tab.key}
+              onClick={() => changeCategory(tab.key)}
+              className={`px-4 py-2 rounded-full text-xs font-medium transition-colors cursor-pointer whitespace-nowrap ${
+                activeCategory === tab.key ? 'bg-white text-black font-semibold' : 'text-zinc-400 hover:text-white'
               }`}
             >
-              {isEn ? 'All (20)' : 'Tất cả (20)'}
+              {tab.label}
             </button>
-            <button
-              onClick={() => setActiveCategory('ops')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                activeCategory === 'ops' 
-                  ? 'bg-white text-black font-semibold' 
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              {isEn ? 'Operations & Engagement (8)' : 'Vận hành & Tương tác (8)'}
-            </button>
-            <button
-              onClick={() => setActiveCategory('biz')}
-              className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                activeCategory === 'biz' 
-                  ? 'bg-white text-black font-semibold' 
-                  : 'text-zinc-400 hover:text-white'
-              }`}
-            >
-              {isEn ? 'Marketing, Data & Business (12)' : 'Marketing, Dữ liệu & Kinh doanh (12)'}
-            </button>
-          </div>
-        </ScrollReveal>
+          ))}
+        </div>
       </div>
 
-      {/* Grid of Products */}
-      <ScrollReveal delay={180} distance={28}>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 mb-10">
-          {filtered.map((prod) => {
-            const isSelected = prod.id === selectedProductId;
-            return (
-              <button
-                key={prod.id}
-                onClick={() => selectProduct(prod.id)}
-                className={`group p-3 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
-                  isSelected
-                    ? 'bg-emerald-950/30 border-emerald-500/60 shadow-lg shadow-emerald-950/30'
-                    : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
-                }`}
-              >
-                <div>
-                  <div className="relative aspect-[16/10] mb-3 rounded-lg overflow-hidden bg-zinc-900 border border-white/5">
-                    <img
-                      src={PRODUCT_IMAGES[prod.slug]}
-                      alt=""
-                      loading="lazy"
-                      draggable={false}
-                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
-                    />
-                  </div>
-                  <div className="flex items-center justify-between mb-2 px-1">
-                    <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
-                      {prod.icon}
-                    </div>
-                    <span className="text-[11px] font-mono text-zinc-500 font-bold">{prod.id}</span>
-                  </div>
-                  <h4 className="font-semibold text-sm text-white mb-1 leading-snug px-1">{prod.name}</h4>
-                  <p className="text-[11px] text-zinc-400 line-clamp-3 leading-relaxed px-1">{prod.summary}</p>
-                </div>
+      <ScrollReveal delay={120} distance={28}>
+        {/* Product carousel: one product at a time, auto-advancing */}
+        <div
+          className="relative rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-950/40 via-zinc-950 to-black overflow-hidden outline-none focus-visible:ring-2 focus-visible:ring-emerald-500/60"
+          role="region"
+          aria-roledescription="carousel"
+          aria-label={isEn ? 'GreenSoft AI products' : 'Sản phẩm AI GreenSoft'}
+          tabIndex={0}
+          onKeyDown={onKeyDown}
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="absolute -top-40 -right-40 w-[520px] h-[520px] rounded-full pointer-events-none" style={{ background: 'radial-gradient(closest-side, rgba(16,185,129,0.14), transparent)' }} aria-hidden="true" />
 
-                <div className="mt-3 pt-2.5 mx-1 border-t border-white/5 flex items-center justify-between text-[11px]">
-                  <span className="text-zinc-500">
-                    {prod.category === 'ops' ? (isEn ? 'Operations & Engagement' : 'Vận hành & Tương tác') : (isEn ? 'Marketing, Data & Business' : 'Marketing, Dữ liệu & Kinh doanh')}
-                  </span>
-                  <span className={`flex items-center gap-1 font-medium ${isSelected ? 'text-emerald-400' : 'text-zinc-400'}`}>
-                    {isEn ? 'Details' : 'Chi tiết'} <ArrowRight className="w-3 h-3" />
-                  </span>
-                </div>
-              </button>
-            );
-          })}
-        </div>
-      </ScrollReveal>
+          <div
+            key={`${activeCategory}-${current.id}`}
+            className="product-slide relative grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 p-5 sm:p-8 lg:p-12"
+            style={{ '--slide-from': `${direction * 32}px` } as React.CSSProperties}
+            aria-live={isRunning ? 'off' : 'polite'}
+          >
+            {/* Illustration */}
+            <div className="lg:col-span-7 order-1 lg:self-center">
+              <div className="relative aspect-[16/10] rounded-2xl overflow-hidden border border-white/10 bg-zinc-950 shadow-2xl shadow-emerald-950/40">
+                <img
+                  src={PRODUCT_IMAGES[current.slug]}
+                  alt=""
+                  aria-hidden="true"
+                  className="absolute inset-0 w-full h-full object-cover scale-110 blur-2xl opacity-40"
+                />
+                <img
+                  src={PRODUCT_IMAGES[current.slug]}
+                  alt={current.name}
+                  draggable={false}
+                  className="product-slide-image relative w-full h-full object-contain p-3 sm:p-4"
+                />
+              </div>
+            </div>
 
-      {/* Selected Product Deep Dive Card - Lazy Loaded */}
-      <LazyBlock minHeight="420px">
-        <ScrollReveal delay={220} distance={32}>
-          <div ref={detailRef} className="scroll-mt-24 p-8 sm:p-10 rounded-2xl bg-zinc-950/90 border border-emerald-500/30 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-3xl pointer-events-none rounded-full" />
-
-            <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-              <div className="lg:col-span-7 space-y-4">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    PRODUCT {selectedProduct.id}
-                  </span>
-                  {selectedProduct.deployedFor && (
-                    <span className="text-xs text-zinc-400">
-                      {isEn ? 'Deployed for: ' : 'Lĩnh vực triển khai: '}<strong className="text-zinc-200">{selectedProduct.deployedFor}</strong>
-                    </span>
-                  )}
-                </div>
-
-                <h3 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                  {selectedProduct.name}
-                </h3>
-
-                <p className="text-zinc-300 text-sm sm:text-base leading-relaxed">
-                  {selectedProduct.summary}
-                </p>
-
-                <div className="space-y-2.5 pt-2">
-                  <h5 className="text-xs font-semibold text-zinc-400 uppercase tracking-wider">
-                    {isEn ? 'Core Capabilities & Technical Highlights' : 'Khả năng & Tính năng cốt lõi (Core Capabilities)'}
-                  </h5>
-                  {selectedProduct.details.map((detail, idx) => (
-                    <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300 leading-relaxed">
-                      <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                      <span>{detail}</span>
-                    </div>
-                  ))}
-                </div>
+            {/* Content */}
+            <div className="lg:col-span-5 order-2 flex flex-col">
+              <div className="flex items-center gap-3 mb-5">
+                <span className="font-mono text-4xl sm:text-5xl font-light text-white/90 leading-none tabular-nums">
+                  {pad(index + 1)}
+                </span>
+                <span className="font-mono text-sm text-zinc-500 self-end mb-1">/ {pad(total)}</span>
+                <span className="ml-auto text-[11px] px-2.5 py-1 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 whitespace-nowrap">
+                  {categoryLabel(current.category)}
+                </span>
               </div>
 
-              <div className="lg:col-span-5 space-y-4">
-                {/* Product illustration from the company brochure */}
-                <figure className="rounded-xl overflow-hidden border border-emerald-500/20 bg-zinc-900">
-                  <img
-                    key={selectedProduct.slug}
-                    src={PRODUCT_IMAGES[selectedProduct.slug]}
-                    alt={selectedProduct.name}
-                    loading="lazy"
-                    draggable={false}
-                    className="w-full max-h-[420px] object-contain bg-zinc-950"
-                  />
-                  <figcaption className="px-4 py-2.5 text-[11px] text-zinc-400 border-t border-white/5">
-                    {isEn ? 'Product interface · ' : 'Giao diện sản phẩm · '}{selectedProduct.name}
-                  </figcaption>
-                </figure>
+              <div className="flex items-center gap-3 mb-3">
+                <span className="w-10 h-10 shrink-0 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
+                  {current.icon}
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight leading-tight">{current.name}</h3>
+              </div>
 
-                <div className="pt-1">
-                  <a
-                    href="#contact"
-                    className="w-full py-3 px-5 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 shadow-lg shadow-white/10"
-                  >
-                    <span>{isEn ? `Request Demo for ${selectedProduct.name}` : `Yêu cầu Demo ${selectedProduct.name}`}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
-                </div>
+              <p className="text-zinc-300 text-sm sm:text-base leading-relaxed mb-5">{current.summary}</p>
+
+              <ul className="space-y-2.5 mb-6">
+                {current.details.map((detail, idx) => (
+                  <li key={idx} className="flex items-start gap-2.5 text-[13px] text-zinc-300 leading-relaxed">
+                    <Check className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                    <span>{detail}</span>
+                  </li>
+                ))}
+              </ul>
+
+              <div className="mt-auto flex flex-col sm:flex-row sm:items-center gap-4 pt-5 border-t border-white/10">
+                {current.deployedFor && (
+                  <div className="text-xs text-zinc-500 flex-1 min-w-0">
+                    <span className="block uppercase tracking-wider text-[10px] mb-1">{isEn ? 'Deployed for' : 'Lĩnh vực triển khai'}</span>
+                    <span className="text-zinc-200">{current.deployedFor}</span>
+                  </div>
+                )}
+                <a
+                  href="#contact"
+                  className="shrink-0 inline-flex items-center justify-center gap-2 py-2.5 px-5 rounded-full bg-white text-black font-semibold text-xs hover:bg-zinc-200 transition-colors"
+                >
+                  {isEn ? 'Request a demo' : 'Yêu cầu demo'}
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </a>
               </div>
             </div>
           </div>
-        </ScrollReveal>
-      </LazyBlock>
+
+          {/* Controls */}
+          <div className="relative flex items-center gap-3 sm:gap-4 px-5 sm:px-8 lg:px-12 pb-5 sm:pb-8">
+            <button
+              onClick={prev}
+              aria-label={isEn ? 'Previous product' : 'Sản phẩm trước'}
+              className="w-11 h-11 shrink-0 rounded-full border border-white/15 bg-white/[0.03] text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={next}
+              aria-label={isEn ? 'Next product' : 'Sản phẩm tiếp theo'}
+              className="w-11 h-11 shrink-0 rounded-full border border-white/15 bg-white/[0.03] text-white flex items-center justify-center hover:bg-white hover:text-black transition-colors cursor-pointer"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+
+            {/* Autoplay progress for the current slide */}
+            <div className="flex-1 h-[3px] rounded-full bg-white/10 overflow-hidden" aria-hidden="true">
+              <div
+                className="h-full bg-emerald-400 rounded-full"
+                style={{
+                  width: `${Math.min(100, (elapsed / SLIDE_MS) * 100)}%`,
+                  transition: elapsed === 0 ? 'none' : `width ${TICK_MS}ms linear`,
+                }}
+              />
+            </div>
+
+            <button
+              onClick={() => setIsPaused(p => !p)}
+              aria-label={isPaused ? (isEn ? 'Play' : 'Tự động chạy') : (isEn ? 'Pause' : 'Tạm dừng')}
+              className="w-9 h-9 shrink-0 rounded-full text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+            >
+              {isPaused ? <Play className="w-4 h-4" /> : <Pause className="w-4 h-4" />}
+            </button>
+          </div>
+        </div>
+      </ScrollReveal>
+
+      {/* Product strip: jump straight to any product */}
+      <div
+        ref={stripRef}
+        className="mt-5 flex gap-2 overflow-x-auto pb-2 [scrollbar-width:thin] [scrollbar-color:rgba(255,255,255,0.15)_transparent]"
+      >
+        {filtered.map((prod, i) => (
+          <button
+            key={prod.id}
+            data-index={i}
+            onClick={() => goTo(i, i >= index ? 1 : -1)}
+            aria-current={i === index}
+            className={`shrink-0 flex items-center gap-2 pl-2 pr-3.5 py-2 rounded-full border text-xs transition-colors cursor-pointer whitespace-nowrap ${
+              i === index
+                ? 'border-emerald-500/50 bg-emerald-500/10 text-white'
+                : 'border-white/10 bg-white/[0.02] text-zinc-400 hover:text-white hover:border-white/25'
+            }`}
+          >
+            <span className={`font-mono text-[10px] w-6 h-6 rounded-full flex items-center justify-center ${i === index ? 'bg-emerald-400 text-black' : 'bg-white/5 text-zinc-500'}`}>
+              {pad(i + 1)}
+            </span>
+            {prod.name}
+          </button>
+        ))}
+      </div>
     </section>
   );
 };
