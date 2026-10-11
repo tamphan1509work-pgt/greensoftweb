@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { 
   ShieldAlert, Bot, Store, Factory, Headphones, MessageSquare, 
   MessageCircle, PhoneCall, Users2, Target, Radio, FolderSearch, 
-  Share2, AlertTriangle, GraduationCap, Briefcase, ArrowRight, Check
+  Share2, AlertTriangle, GraduationCap, Briefcase, ArrowRight, Check,
+  Building2, TrendingUp, Home, Sparkles
 } from 'lucide-react';
 import { ScrollReveal } from './ScrollReveal';
 import { LazyBlock } from './LazyBlock';
 import { Language } from '../i18n/translations';
 
+// Product illustrations cropped from the GreenSoft Company Brochure 2026, keyed by product slug
+const PRODUCT_IMAGES: Record<string, string> = Object.fromEntries(
+  Object.entries(
+    import.meta.glob<string>('../assets/products/*.webp', { eager: true, query: '?url', import: 'default' }),
+  ).map(([path, url]) => [path.split('/').pop()!.replace(/\.webp$/, ''), url]),
+);
+
 interface ProductItem {
   id: string;
+  /** Matches the illustration file name in src/assets/products */
+  slug: string;
   name: string;
   category: 'ops' | 'biz';
   icon: React.ReactNode;
@@ -25,379 +35,501 @@ interface ProductsSectionProps {
 export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' }) => {
   const [activeCategory, setActiveCategory] = useState<'all' | 'ops' | 'biz'>('all');
   const [selectedProductId, setSelectedProductId] = useState<string>('01');
+  const detailRef = useRef<HTMLDivElement>(null);
+
+  // On stacked (mobile/tablet) layouts the detail card sits below all 20 cards,
+  // so bring it into view after a selection.
+  const selectProduct = (id: string) => {
+    setSelectedProductId(id);
+    if (window.matchMedia('(max-width: 1023px)').matches) {
+      requestAnimationFrame(() => detailRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+    }
+  };
   const isEn = lang === 'EN';
 
   const products: ProductItem[] = [
-    // --- Operations, Security & Customer Engagement (01 - 08) ---
+    // --- Operations, Security & Customer Engagement (brochure p.05) ---
     {
       id: '01',
-      name: isEn ? 'Anomaly Detection with IoT' : 'Phát Hiện Bất Thường Qua IoT & AI',
+      slug: 'anomaly-detection',
+      name: isEn ? 'Anomaly Detection with IoT' : 'Phát Hiện Bất Thường với IoT',
       category: 'ops',
       icon: <ShieldAlert className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Real-time urban and industrial security monitoring with computer vision and IoT telemetry, automatically flagging early anomalies.'
-        : 'Giám sát an ninh đô thị & công nghiệp thời gian thực qua IoT và thị giác máy tính, tự động phát hiện và cảnh báo sớm sự cố.',
+        ? 'Urban and industrial security that watches everything at once: IoT devices and computer vision feed one platform that monitors in real time, predicts what is about to go wrong and responds automatically.'
+        : 'Giải pháp an ninh đô thị và công nghiệp giám sát mọi thứ cùng lúc: thiết bị IoT và thị giác máy tính đổ về một nền tảng duy nhất để theo dõi thời gian thực, dự báo sự cố và tự động phản ứng.',
       details: isEn
         ? [
-            'Object recognition, person re-identification, and vehicle telemetry across camera streams',
-            'Vision-based smoke & fire early warnings before conventional thermal sensors trigger',
-            'Multi-sensor fusion: Ambient temperature, vibration, acoustic decibels, and air quality',
-            'Automated emergency dispatch notifications to central operations and field mobile apps'
+            'Human & object detection: live identification and tracking of people, vehicles and objects across every camera',
+            'Fire & smoke detection straight from existing camera feeds, long before a conventional sensor would react',
+            'Multi-sensor fusion: temperature, noise, motion and CO₂ readings correlated with the video stream',
+            'Automated escalation: alerts pushed to the monitoring centre and mobile app the moment a rule is breached'
           ]
         : [
-            'Nhận diện & theo dõi người, phương tiện và đồ vật trên mọi camera',
-            'Cảnh báo sớm khói & lửa bằng thị giác trước khi cảm biến truyền thống kích hoạt',
-            'Hợp nhất dữ liệu cảm biến: Nhiệt độ, rung động, tiếng ồn và CO₂',
-            'Tự động gửi cảnh báo khẩn cấp đến trung tâm điều hành và app di động'
+            'Nhận diện người & vật thể: định danh và theo dõi người, phương tiện, đồ vật trên mọi camera',
+            'Phát hiện khói & lửa ngay từ camera sẵn có, sớm hơn nhiều so với cảm biến truyền thống',
+            'Hợp nhất đa cảm biến: nhiệt độ, tiếng ồn, chuyển động và CO₂ đối chiếu cùng luồng video',
+            'Tự động leo thang cảnh báo đến trung tâm giám sát và ứng dụng di động ngay khi vi phạm quy tắc'
           ],
-      deployedFor: 'Urban Security · Industrial Parks · Smart Buildings'
+      deployedFor: isEn ? 'Smart City · Industrial Parks · Buildings' : 'Đô thị thông minh · Khu công nghiệp · Tòa nhà'
     },
     {
       id: '02',
-      name: isEn ? 'Bot Management' : 'Quản Trị & Ngăn Chặn Bot',
+      slug: 'bot-management',
+      name: 'Bot Management',
       category: 'ops',
       icon: <Bot className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Distinguishes good bots, bad bots, and genuine humans — protecting digital APIs and web apps from fraud and credential abuse.'
-        : 'Phân loại chính xác bot tốt, bot xấu và người dùng thật — bảo vệ website, API khỏi gian lận và scraping mà không gây gián đoạn.',
+        ? 'Tells good bots, bad bots and real people apart — protecting websites, APIs and applications from fraud, scraping and credential stuffing without adding friction for genuine customers.'
+        : 'Phân biệt bot tốt, bot xấu và người dùng thật — bảo vệ website, API và ứng dụng khỏi gian lận, thu thập dữ liệu trái phép và tấn công đăng nhập mà không làm chậm khách hàng thật.',
       details: isEn
         ? [
-            'Behavioral biometric fingerprinting captured non-intrusively upon initial connection',
-            'Dynamic machine learning score filtering malicious web scrapers and credential stuffers',
-            'Flexible policy enforcement: Hard block, adaptive rate-limiting, or invisible challenges',
-            'Zero latency penalty on payment checkouts or genuine buyer session conversion'
+            'Detect: behavioural fingerprinting flags automation the moment it touches your platform',
+            'Analyse: AI scoring separates good bots, bad bots and humans, and keeps learning',
+            'Mitigate: block, throttle or challenge suspicious traffic while legitimate access flows on',
+            'Protects against DDoS, credential stuffing and data scraping'
           ]
         : [
-            'Thu thập dấu vân tay hành vi ngay khi truy cập nền tảng',
-            'AI chấm điểm liên tục để lọc bot quét dữ liệu độc hại',
-            'Ngăn chặn linh hoạt: Chặn, bóp băng thông hoặc thử thách traffic khả nghi',
-            'Không ảnh hưởng tốc độ tải trang và trải nghiệm thanh toán của khách hàng'
+            'Phát hiện: dấu vân tay hành vi nhận diện tự động hóa ngay khi chạm vào nền tảng',
+            'Phân tích: AI chấm điểm, tách bạch bot tốt, bot xấu và người dùng thật, liên tục tự học',
+            'Ngăn chặn: chặn, giới hạn hoặc thử thách lưu lượng đáng ngờ, truy cập hợp lệ vẫn thông suốt',
+            'Bảo vệ trước DDoS, tấn công dò mật khẩu (credential stuffing) và cào dữ liệu'
           ],
-      deployedFor: 'E-commerce · Banking APIs · Media Platforms'
+      deployedFor: isEn ? 'E-commerce · Banking · Online Platforms' : 'Thương mại điện tử · Ngân hàng · Nền tảng trực tuyến'
     },
     {
       id: '03',
-      name: isEn ? 'Smart Supermarket Platform' : 'Nền Tảng Siêu Thị Thông Minh',
+      slug: 'smart-supermarket',
+      name: isEn ? 'Smart Supermarket' : 'Siêu Thị Thông Minh AI & IoT',
       category: 'ops',
       icon: <Store className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Centralized retail intelligence: Enhancing store operations, safety, and transforming foot-traffic behaviors into executive decisions.'
-        : 'Nền tảng quản lý siêu thị tập trung: Tối ưu vận hành, an ninh và chuyển đổi hành vi mua sắm thành dữ liệu quyết định theo thời gian thực.',
+        ? 'One platform that optimises operations, hardens security and turns shopper behaviour into data-driven decisions — across every branch, in real time.'
+        : 'Một nền tảng tập trung giúp tối ưu vận hành, tăng cường an ninh và biến hành vi mua sắm thành quyết định dựa trên dữ liệu — trên toàn chuỗi cửa hàng, theo thời gian thực.',
       details: isEn
         ? [
-            'Foot-traffic density mapping, dwell times, and checkout queue length optimization',
-            'Shopper behavior heatmaps directing shelf layout strategy and promotional end-caps',
-            'Cashier customer engagement monitoring with real-time service anomaly detection',
-            'Root-cause diagnostic dashboards correlating revenue variances by branch location'
+            'Face recognition for staff check-in/out and returning customers from a single camera',
+            'Behaviour heatmaps: footpaths, dwell time and queue length that drive shelf placement and floor plans',
+            'Anomaly recognition and early warnings pushed to the monitoring centre and operations app',
+            'Diagnostic & predictive analytics: explain sales drops and forecast demand, traffic and stock needs'
           ]
         : [
-            'Bản đồ mật độ di chuyển, thời gian dừng và độ dài hàng đợi thanh toán',
-            'Bản đồ nhiệt (Heatmap) hành vi giúp quy hoạch quầy kệ tối ưu doanh số',
-            'Đánh giá thái độ phục vụ của nhân viên và cảnh báo bất thường tức thì',
-            'Dashboard chẩn đoán nguyên nhân biến động doanh số theo từng chi nhánh'
+            'Nhận diện khuôn mặt: chấm công nhân viên và nhận biết khách hàng quay lại chỉ với một camera',
+            'Bản đồ nhiệt hành vi: lối đi, thời gian dừng, độ dài hàng chờ để tối ưu kệ hàng và mặt bằng',
+            'Nhận diện bất thường và cảnh báo sớm đến trung tâm giám sát và ứng dụng vận hành',
+            'Phân tích chẩn đoán & dự báo: giải thích doanh số sụt giảm, dự báo nhu cầu, lưu lượng và tồn kho'
           ],
-      deployedFor: 'Supermarket Chains · Retail Flagships · Convenience Stores'
+      deployedFor: isEn ? 'Retail chains · Supermarkets · Convenience stores' : 'Chuỗi bán lẻ · Siêu thị · Cửa hàng tiện lợi'
     },
     {
       id: '04',
+      slug: 'smart-factory',
       name: isEn ? 'Smart Factory (iMES)' : 'Nhà Máy Thông Minh (iMES)',
       category: 'ops',
       icon: <Factory className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Intelligent manufacturing execution system uniting IoT sensors, AI inspection, and telemetry to eradicate factory downtime.'
-        : 'Hệ thống điều hành sản xuất thông minh kết nối IoT, AI và phân tích thời gian thực vào dây chuyền nhằm triệt tiêu thời gian chết máy.',
+        ? 'An intelligent manufacturing execution system that joins IoT, AI, automation and real-time analytics to the factory floor — linking planning (MRP/ERP), execution (MES) and control (PLC) layers.'
+        : 'Hệ thống điều hành sản xuất thông minh kết nối IoT, AI, tự động hóa và phân tích thời gian thực vào xưởng sản xuất — liên thông tầng kế hoạch (MRP/ERP), điều hành (MES) và điều khiển (PLC).',
       details: isEn
         ? [
-            'Overall Equipment Effectiveness (OEE) continuous monitoring minimizing emergency stops',
-            'High-speed automated surface visual defect detection deployed along conveyor belts',
-            'Predictive machine maintenance analyzing acoustic, vibration, and thermal harmonics',
-            'Bidirectional data pipeline integrated with legacy ERP/MES enterprise backbones'
+            'Monitor equipment performance and reduce downtime',
+            'Tighten quality control with automated inspection',
+            'Predictive maintenance from live sensor data',
+            'Lower operating cost with a data-driven production line'
           ]
         : [
-            'Giám sát hiệu suất thiết bị OEE và cắt giảm thời gian dừng máy đột xuất',
-            'Kiểm soát chất lượng bằng thị giác máy tính tốc độ cao trên băng chuyền',
-            'Bảo trì dự đoán từ dữ liệu cảm biến rung, nhiệt độ và dòng điện',
-            'Kết nối thông suốt hai chiều với hệ thống ERP/MRP hiện hữu'
+            'Giám sát hiệu suất thiết bị và giảm thời gian dừng máy',
+            'Siết chặt kiểm soát chất lượng với kiểm tra tự động',
+            'Bảo trì dự đoán từ dữ liệu cảm biến trực tiếp',
+            'Giảm chi phí vận hành với dây chuyền vận hành bằng dữ liệu'
           ],
-      deployedFor: 'Industrial Manufacturing · Assembly Lines · Electronics'
+      deployedFor: isEn ? 'Manufacturing · Industrial plants' : 'Sản xuất · Nhà máy công nghiệp'
     },
     {
       id: '05',
-      name: isEn ? 'Chat & Call Virtual Assistant' : 'Trợ Lý Ảo Chat & Voice Thoại',
+      slug: 'virtual-assistant',
+      name: isEn ? 'GenAI Chat & Call Virtual Assistant' : 'Trợ Lý Ảo GenAI Chat & Gọi Thoại',
       category: 'ops',
       icon: <Headphones className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? '24/7 autonomous multimodal assistant over text and voice. Explains products, qualifies buyers, and handoffs with complete context.'
-        : 'Trợ lý ảo thông minh 24/7 trên cả chat và thoại. Giải đáp sản phẩm, sàng lọc khách hàng tiềm năng và chuyển tiếp liền mạch với đầy đủ ngữ cảnh.',
+        ? 'A human-like assistant that works every hour of the day, on chat and on the phone. It answers product and company questions, qualifies buyers and hands over to your team with the full conversation already understood.'
+        : 'Trợ lý ảo như người thật, làm việc 24/7 qua chat và điện thoại: trả lời câu hỏi về sản phẩm, doanh nghiệp, sàng lọc khách hàng tiềm năng và chuyển cho đội ngũ kèm toàn bộ ngữ cảnh hội thoại.',
       details: isEn
         ? [
-            'Omnichannel session persistence retaining conversational memory across touches',
-            'Natural speech recognition tuned for Vietnamese multi-regional dialects and idioms',
-            'Human-like responsive tone mirroring seasoned brand concierge specialists',
-            'Successfully deployed across Trung Nguyen Legend Café flagship chains'
+            'Contextual awareness: connects conversations with context and remembers previous interactions',
+            'Natural language understanding of varied speech and text, replying with what is actually relevant',
+            'Creative responses that keep the conversation fluid and natural',
+            'Continuous learning: gains insight from every interaction and improves with each use'
           ]
         : [
-            'Ghi nhớ ngữ cảnh đa kênh xuyên suốt lịch sử tương tác của người dùng',
-            'Xử lý ngôn ngữ tự nhiên linh hoạt theo vùng miền và khẩu âm',
-            'Phản hồi sinh động, tự nhiên như chuyên viên tư vấn giàu kinh nghiệm',
-            'Đã triển khai thành công cho chuỗi café Trung Nguyên Legend'
+            'Hiểu ngữ cảnh: kết nối hội thoại và ghi nhớ các tương tác trước đó',
+            'Hiểu ngôn ngữ tự nhiên qua giọng nói và văn bản, phản hồi đúng trọng tâm',
+            'Phản hồi sáng tạo giúp cuộc trò chuyện tự nhiên, trôi chảy',
+            'Liên tục học hỏi từ mỗi tương tác và cải thiện sau mỗi lần sử dụng'
           ],
-      deployedFor: 'Retail · Banking · Real Estate · Healthcare · Hospitality · Education'
+      deployedFor: isEn ? 'Retail · Banking · Real estate · Healthcare · Hospitality · Education' : 'Bán lẻ · Ngân hàng · Bất động sản · Y tế · Khách sạn · Giáo dục'
     },
     {
       id: '06',
-      name: isEn ? 'AI Chatbot Assistant' : 'AI Chatbot Tự Động Hóa',
+      slug: 'ai-chatbot',
+      name: 'AI Chatbot',
       category: 'ops',
       icon: <MessageSquare className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Automated 24/7 intelligent customer dialogue trained on corporate guidelines, dispatching support tickets automatically.'
-        : 'Tự động hóa phản hồi thông minh 24/7 theo kịch bản doanh nghiệp, cá nhân hóa nội dung và tự tạo ticket hỗ trợ kỹ thuật.',
+        ? 'AI playbook automation with personalised replies, 24/7 — engaging every customer instantly on web and mobile and capturing leads while your team is offline.'
+        : 'Tự động hóa kịch bản tư vấn bằng AI với phản hồi cá nhân hóa 24/7 — tương tác tức thì với khách hàng trên web và di động, ghi nhận khách hàng tiềm năng kể cả ngoài giờ làm việc.',
       details: isEn
         ? [
-            'Trained directly on internal corporate docs, catalogues, and SOP guidelines',
-            'Autonomous intent classification and calendar consultation booking',
-            'Multilingual real-time translation for international customer inquiries',
-            'Instant warm transfer to live specialist when handling escalated disputes'
+            'AI playbooks that automate consultation scenarios end to end',
+            'Personalised replies based on each customer’s profile and history',
+            'Available 24/7 on website, mobile app and social channels',
+            'Seamless handover to a human consultant with the full conversation'
           ]
         : [
-            'Huấn luyện trên tài liệu, danh mục sản phẩm và quy trình nội bộ',
-            'Tự động phân loại nhu cầu và xếp lịch hẹn tư vấn',
-            'Hỗ trợ đa ngôn ngữ với dịch thuật thời gian thực',
-            'Chuyển giao tức thì cho nhân viên khi gặp trường hợp phức tạp'
+            'Kịch bản (playbook) AI tự động hóa toàn bộ quy trình tư vấn',
+            'Phản hồi cá nhân hóa theo hồ sơ và lịch sử của từng khách hàng',
+            'Hoạt động 24/7 trên website, ứng dụng di động và mạng xã hội',
+            'Chuyển tiếp liền mạch cho tư vấn viên kèm toàn bộ nội dung hội thoại'
           ],
-      deployedFor: 'Customer Support · Sales Inquiries · Helpdesks'
+      deployedFor: isEn ? 'Education · Real estate · Retail' : 'Giáo dục · Bất động sản · Bán lẻ'
     },
     {
       id: '07',
+      slug: 'omni-channel-chat',
       name: isEn ? 'Omni-Channel Social Chat' : 'Hộp Thư Hợp Nhất Đa Kênh',
       category: 'ops',
       icon: <MessageCircle className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Unified social inbox consolidating Zalo OA, Facebook, Instagram, TikTok, and Web Live Chat into a single window for support teams.'
-        : 'Hộp thư hợp nhất kết nối Zalo OA, Facebook, Instagram, TikTok và Live Chat về một cửa sổ duy nhất cho đội ngũ tư vấn.',
+        ? 'Facebook, Zalo, Instagram, TikTok, live chat and the phone line — handled by one team, in one window, with the full customer context beside every conversation.'
+        : 'Facebook, Zalo, Instagram, TikTok, live chat và tổng đài — được một đội ngũ xử lý trên cùng một màn hình, luôn kèm đầy đủ thông tin khách hàng bên cạnh mỗi cuộc hội thoại.',
       details: isEn
         ? [
-            'Consolidated inbox syncing all multi-brand conversations in one interface',
-            'Smart ticket allocation based on staff competency, active shifts, and lead value',
-            'Accessible on web browser consoles and native iOS/Android mobile applications',
-            'Immediate visibility into customer purchase history and CRM notes during chat'
+            'Unified inbox: every channel and every conversation in one place',
+            'Automated allocation: customisable rules route each customer to the right consultation group',
+            'Live chat with the full customer profile and history',
+            'Agents work from the desktop console or the mobile app'
           ]
         : [
-            'Hộp thư hợp nhất: Đồng bộ mọi cuộc trò chuyện trên một màn hình duy nhất',
-            'Phân bổ hội thoại tự động theo kỹ năng và ca trực của tư vấn viên',
-            'Hỗ trợ đầy đủ trên cả giao diện Web và ứng dụng di động iOS/Android',
-            'Xem trọn vẹn lịch sử giao dịch và hồ sơ khách hàng ngay trong phiên chat'
+            'Hộp thư hợp nhất: mọi kênh, mọi cuộc hội thoại ở cùng một nơi',
+            'Tự động phân bổ: quy tắc tùy chỉnh chuyển khách hàng đến đúng nhóm tư vấn',
+            'Chat trực tiếp kèm đầy đủ hồ sơ và lịch sử khách hàng',
+            'Nhân viên làm việc trên máy tính hoặc ứng dụng di động'
           ],
-      deployedFor: 'Multi-brand Retail · Online Stores · Customer Success'
+      deployedFor: isEn ? 'Education · Retail · Services' : 'Giáo dục · Bán lẻ · Dịch vụ'
     },
     {
       id: '08',
-      name: isEn ? 'AI Call Center Suite' : 'Tổng Đài Thông Minh AI',
+      slug: 'call-center',
+      name: isEn ? 'Call Center' : 'Tổng Đài Thông Minh',
       category: 'ops',
       icon: <PhoneCall className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Intelligent telephony: Automated interactive voice routing, recording, real-time audio transcription, and caller sentiment analysis.'
-        : 'Hạ tầng tổng đài AI thông minh: Định tuyến cuộc gọi tự động, ghi âm, bóc băng giọng nói theo thời gian thực và phân tích cảm xúc khách hàng.',
+        ? 'Routing, recording and real-time analytics for every call, connected to the same customer record as your chat channels.'
+        : 'Định tuyến, ghi âm và phân tích thời gian thực cho mọi cuộc gọi, liên kết cùng hồ sơ khách hàng với các kênh chat.',
       details: isEn
         ? [
-            'Conversational natural IVR eliminating rigid keypress menus',
-            'Real-time live voice-to-text transcription with copilot script suggestions',
-            '100% automated call quality scoring and compliance monitoring',
-            'Instant CRM synchronization of call duration, outcome tags, and action items'
+            'Smart routing of inbound calls to the right agent or group',
+            'Call recording linked to the customer profile',
+            'Real-time analytics on call volume, wait time and agent performance',
+            'One record for calls and chats across every channel'
           ]
         : [
-            'IVR thông minh đối thoại tự nhiên, không cần bấm phím số phức tạp',
-            'Chuyển giọng nói thành văn bản trực tiếp và gợi ý kịch bản cho điện thoại viên',
-            'Chấm điểm chất lượng cuộc gọi tự động 100% cuộc gọi vào/ra',
-            'Đồng bộ tức thì dữ liệu thời lượng, kết quả vào hệ thống CRM'
+            'Định tuyến thông minh cuộc gọi đến đúng nhân viên hoặc nhóm',
+            'Ghi âm cuộc gọi gắn với hồ sơ khách hàng',
+            'Phân tích thời gian thực về lưu lượng, thời gian chờ và hiệu suất nhân viên',
+            'Một hồ sơ duy nhất cho cả cuộc gọi và tin nhắn trên mọi kênh'
           ],
-      deployedFor: 'Tele-sales · Support Hotlines · Financial Teleservice'
+      deployedFor: isEn ? 'Customer service · Sales · Admissions' : 'Chăm sóc khách hàng · Bán hàng · Tuyển sinh'
     },
 
-    // --- Marketing, Data Intelligence & Business Platforms (09 - 16) ---
+    // --- Marketing, Data Intelligence & Business Platforms (brochure p.06) ---
     {
       id: '09',
-      name: isEn ? 'Smart CRM & Lead Management' : 'Smart CRM & Quản Trị Khách Hàng',
+      slug: 'smart-crm',
+      name: isEn ? 'Smart CRM & Lead Management' : 'Smart CRM & Quản Lý Khách Hàng Tiềm Năng',
       category: 'biz',
       icon: <Users2 className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Comprehensive lifecycle management from first awareness to brand loyalty via an integrated Single Customer View.'
-        : 'Quản trị toàn diện hành trình khách hàng từ lần chạm đầu tiên đến khách hàng trung thành qua Hồ sơ Hợp nhất (Single Customer View).',
+        ? 'One customer record, one journey, one set of numbers — from first touch to loyal customer, with centralised data, automated workflows and live insight.'
+        : 'Một hồ sơ khách hàng, một hành trình, một bộ số liệu — từ lần tiếp cận đầu tiên đến khách hàng trung thành, với dữ liệu tập trung, quy trình tự động và báo cáo tức thời.',
       details: isEn
         ? [
-            'Unified candidate/buyer identity aggregating Marketing, Tele-sales, and Agency partners',
-            'Autonomous lead deduplication, hygiene validation, and predictive conversion scoring',
-            'Tracking 5 lifecycle stages: Reach → Engage → Qualify → Consult → Close',
-            'Proven deployment at Gia Dinh University: Reduced CAC and personalized advisory'
+            'Single customer view across every channel',
+            'Automated lead capture, de-duplication and qualification',
+            'Journey stages, tasks and SLAs with clear ownership',
+            'KPI dashboards and forecasting — higher conversion at a lower acquisition cost'
           ]
         : [
-            'Hồ sơ khách hàng duy nhất tổng hợp từ Marketing, Call Center và Đại lý',
-            'Quy trình sàng lọc, khử trùng lặp và chấm điểm khách hàng tự động',
-            'Theo dõi 5 giai đoạn: Tiếp cận → Tương tác → Thẩm định → Tư vấn → Chốt đơn',
-            'Triển khai tại ĐH Gia Định: Tối ưu chi phí tuyển sinh và cá nhân hóa tư vấn'
+            'Góc nhìn khách hàng hợp nhất (Single Customer View) trên mọi kênh',
+            'Tự động thu thập, loại trùng và đánh giá khách hàng tiềm năng',
+            'Giai đoạn hành trình, công việc và SLA với trách nhiệm rõ ràng',
+            'Dashboard KPI và dự báo — tăng chuyển đổi, giảm chi phí thu hút khách hàng (CAC)'
           ],
-      deployedFor: 'Higher Education · Real Estate · Financial Advisory'
+      deployedFor: isEn ? 'Education · Real estate · Enterprise' : 'Giáo dục · Bất động sản · Doanh nghiệp'
     },
     {
       id: '10',
-      name: isEn ? 'Personalised Campaigns' : 'Chiến Dịch Cá Nhân Hóa Đa Kênh',
+      slug: 'personalised-campaigns',
+      name: isEn ? 'Personalised Campaigns' : 'Chiến Dịch Cá Nhân Hóa',
       category: 'biz',
       icon: <Target className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Audience segmentation and automated omnichannel conversion using machine learning propensity models and tailored messaging.'
-        : 'Phân khúc, tự động hóa và tối ưu chuyển đổi đa kênh với thuật toán dự đoán hành vi và sinh nội dung cá nhân hóa theo từng người nhận.',
+        ? 'Segment, automate and convert across channels — plan a campaign, publish it everywhere, then follow its performance live.'
+        : 'Phân khúc, tự động hóa và chuyển đổi trên đa kênh — lên kế hoạch chiến dịch, đăng tải mọi nơi và theo dõi hiệu quả theo thời gian thực.',
       details: isEn
         ? [
-            'Clustering shoppers by purchase propensity and verified taste affinities',
-            'Dynamic automated personalization across Email, SMS, and Zalo ZNS channels',
-            'Precise incremental revenue attribution for individual campaign creatives',
-            'Automated A/B bandit testing selecting top copy variations dynamically'
+            'Audience segmentation from CRM and behavioural data',
+            'Campaign pool with live reach, engagement and conversion',
+            'Build and schedule: choose platforms, input content, select accounts, set the posting schedule',
+            'Multi-channel orchestration with integrated performance analytics'
           ]
         : [
-            'Phân cụm khách hàng theo xác suất mua hàng và sở thích thực tế',
-            'Tự động cá nhân hóa thông điệp qua Email, SMS, Zalo ZNS',
-            'Đo lường doanh thu đóng góp chính xác cho từng nội dung chiến dịch',
-            'Tự động chọn phiên bản A/B tối ưu nhất để phân bổ ngân sách'
+            'Phân khúc khách hàng từ dữ liệu CRM và hành vi',
+            'Kho chiến dịch với số liệu tiếp cận, tương tác và chuyển đổi trực tiếp',
+            'Tạo và lên lịch: chọn nền tảng, nhập nội dung, chọn tài khoản, đặt lịch đăng',
+            'Điều phối đa kênh tích hợp phân tích hiệu quả'
           ],
-      deployedFor: 'Direct-to-Consumer Brands · Subscription Services · Retail'
+      deployedFor: isEn ? 'Marketing teams · Retail · Real estate' : 'Đội ngũ Marketing · Bán lẻ · Bất động sản'
     },
     {
       id: '11',
-      name: isEn ? 'Social Listening Intelligence' : 'Lắng Nghe & Đo Lường Xã Hội',
+      slug: 'social-listening',
+      name: 'Social Listening',
       category: 'biz',
       icon: <Radio className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'High-throughput crawlers monitoring social platforms, press, and communities, turning public signals into sentiment intelligence.'
-        : 'Hệ thống crawler liên tục rà quét mạng xã hội, báo chí và diễn đàn, chuyển hóa dữ liệu công chúng thành báo cáo xu hướng và đo lường sắc thái.',
+        ? 'Millions of public conversations, read continuously. Crawlers and language models monitor social platforms, news and forums, then turn the noise into sentiment, trends and entities you can act on — in real time.'
+        : 'Đọc liên tục hàng triệu cuộc hội thoại công khai. Hệ thống thu thập và mô hình ngôn ngữ theo dõi mạng xã hội, báo chí, diễn đàn rồi chuyển thành cảm xúc, xu hướng và đối tượng có thể hành động ngay — theo thời gian thực.',
       details: isEn
         ? [
-            'Brand mentions and share of voice telemetry across Facebook, TikTok, YouTube, and news',
-            'Early detection of nascent brand reputational risk before viral escalation',
-            'Uncovering latent buyer preferences through vector semantic search',
-            'Capturing high-intent sales signals the moment users request product recommendations'
+            'Track brand mentions and share of voice across channels',
+            'Analyse sentiment and detect communication crises early',
+            'Identify customer needs and emerging market trends',
+            'Correlate entities with face ID and vector search; surface leads the moment intent appears'
           ]
         : [
-            'Theo dõi nhắc tên thương hiệu và thị phần thảo luận trên Facebook, TikTok, YouTube',
-            'Phát hiện sớm dấu hiệu khủng hoảng truyền thông trước khi lan rộng',
-            'Nhận diện nhu cầu tiềm ẩn của khách hàng bằng tìm kiếm ngữ nghĩa',
-            'Bắt trọn cơ hội bán hàng ngay khi người dùng bày tỏ ý định mua trên mạng'
+            'Theo dõi lượt nhắc thương hiệu và thị phần thảo luận trên các kênh',
+            'Phân tích cảm xúc và phát hiện sớm khủng hoảng truyền thông',
+            'Nắm bắt nhu cầu khách hàng và xu hướng thị trường mới',
+            'Liên kết đối tượng bằng nhận diện khuôn mặt và tìm kiếm vector; phát hiện khách hàng tiềm năng ngay khi có ý định'
           ],
-      deployedFor: 'FMCG Brands · PR Agencies · Enterprise Risk Teams'
+      deployedFor: isEn ? 'Brands · Agencies · Public sector' : 'Thương hiệu · Agency · Khối công'
     },
     {
       id: '12',
-      name: isEn ? 'Multimedia Asset Management' : 'Quản Lý Đa Phương Tiện Thông Minh',
+      slug: 'multimedia-management',
+      name: isEn ? 'Multimedia Management' : 'Quản Lý Đa Phương Tiện',
       category: 'biz',
       icon: <FolderSearch className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Intelligent corporate vault indexing photos, footage, audio, and documents by deep semantic concepts rather than mere filenames.'
-        : 'Kho lưu trữ thông minh đánh chỉ mục hình ảnh, video, âm thanh và tài liệu theo nội dung ngữ nghĩa thực tế thay vì chỉ theo tên file.',
+        ? 'A single place for every file your organisation produces. Images, video, audio and documents are indexed by content — so a search for “a man in a white shirt” returns the right frame.'
+        : 'Một nơi duy nhất cho mọi tệp tin của doanh nghiệp. Hình ảnh, video, âm thanh và tài liệu được lập chỉ mục theo nội dung — tìm “người đàn ông áo sơ mi trắng” sẽ ra đúng khung hình.',
       details: isEn
         ? [
-            'Semantic natural language search: Describe remembered video scenes to retrieve exact frames',
-            'OCR extraction and intelligent summarization of legal scans and digital contracts',
-            'Multidimensional vector indexing: By facial identities, semantic context, and visual tags',
-            'Large-scale video parsing accelerating media broadcast production turnaround'
+            'Smart context search: describe what you remember and it finds the asset',
+            'Search by context, file name, face name, face image, metadata or content',
+            'Document intelligence: summarise, extract and compare an original against its scan',
+            'Frame-level video and media indexing across the whole library'
           ]
         : [
-            'Tìm kiếm thông minh: Mô tả chi tiết hình ảnh nhớ được để tìm chính xác khung hình',
-            'Trích xuất và tóm tắt văn bản thông minh từ tài liệu scan và hợp đồng số',
-            'Tìm kiếm đa chiều: Theo ngữ cảnh, khuôn mặt, siêu dữ liệu và nội dung',
-            'Phân tích ngữ nghĩa video quy mô lớn phục vụ sản xuất truyền thông'
+            'Tìm kiếm theo ngữ cảnh: mô tả điều bạn nhớ, hệ thống tìm ra tệp tin',
+            'Tìm theo ngữ cảnh, tên tệp, tên người, ảnh khuôn mặt, metadata hoặc nội dung',
+            'Xử lý tài liệu thông minh: tóm tắt, trích xuất và đối chiếu bản gốc với bản scan',
+            'Lập chỉ mục video theo từng khung hình trên toàn bộ thư viện'
           ],
-      deployedFor: 'Media Production · Legal Firms · Corporate Archives'
+      deployedFor: isEn ? 'Media · Government · Enterprise archives' : 'Truyền thông · Cơ quan nhà nước · Lưu trữ doanh nghiệp'
     },
     {
       id: '13',
-      name: isEn ? 'Multi Social Posting' : 'Đăng Bài Đa Kênh Tự Động',
+      slug: 'multi-social-posting',
+      name: 'Multi Social Posting',
       category: 'biz',
       icon: <Share2 className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Schedule and publish content simultaneously across Zalo, Facebook, Instagram, and TikTok with an integrated AI generative copywriter.'
-        : 'Lên lịch và xuất bản nội dung đa kênh đồng thời lên Zalo, Facebook, Instagram, TikTok từ một giao diện duy nhất với trợ lý viết AI.',
+        ? 'Publish and schedule from a single screen: link your social accounts, draft posts with AI suggestions, post to every platform at once and review results with AI insights.'
+        : 'Đăng và lên lịch bài viết từ một màn hình: liên kết tài khoản mạng xã hội, soạn bài với gợi ý từ AI, đăng đồng loạt lên mọi nền tảng và xem kết quả kèm phân tích AI.',
       details: isEn
         ? [
-            'Autonomous posting scheduler recommending peak engagement time slots',
-            'AI writing assistant adapting tone of voice to each social channel standard',
-            'Automated media resizing and aspect ratio adaptation (Reels/Feed/Stories)',
-            'Centralized performance dashboard tracking impressions, shares, and clicks'
+            'Link Zalo, Facebook, Instagram, TikTok and websites in one place',
+            'Draft posts with AI suggestions, including content from linked product listings',
+            'Multi-platform posting and scheduling in one step',
+            'Results dashboard with AI insights per post'
           ]
         : [
-            'Lên lịch đăng bài tự động đề xuất khung giờ tương tác cao nhất',
-            'Trợ lý AI tự động điều chỉnh giọng văn phù hợp từng mạng xã hội',
-            'Tự động căn chỉnh kích thước hình ảnh và video theo chuẩn từng nền tảng',
-            'Báo cáo tổng hợp lượt tiếp cận, tương tác và chia sẻ tập trung'
+            'Liên kết Zalo, Facebook, Instagram, TikTok và website ở một nơi',
+            'Soạn bài với gợi ý AI, lấy nội dung từ sản phẩm đã liên kết',
+            'Đăng và lên lịch đồng loạt trên nhiều nền tảng chỉ với một thao tác',
+            'Xem kết quả từng bài viết kèm phân tích từ AI'
           ],
-      deployedFor: 'Marketing Agencies · Real Estate Agents · Brand Creators'
+      deployedFor: isEn ? 'Real estate agents · Retail · SMEs' : 'Môi giới bất động sản · Bán lẻ · Doanh nghiệp SME'
     },
     {
       id: '14',
-      name: isEn ? 'Crisis Management Shield' : 'Kiểm Soát Khủng Hoảng Truyền Thông',
+      slug: 'crisis-management',
+      name: isEn ? 'Crisis Management' : 'Quản Lý Khủng Hoảng Truyền Thông',
       category: 'biz',
       icon: <AlertTriangle className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Early warning and reputation damage mitigation: Scenario simulations, real-time monitoring, and pre-approved response activations.'
-        : 'Cảnh báo sớm và kiểm soát khủng hoảng truyền thông: Lên kế hoạch, theo dõi phản hồi thời gian thực và kích hoạt kịch bản ứng phó kịp thời.',
+        ? 'Detect and defuse negative coverage early — watch the response to every campaign and step in the moment sentiment turns.'
+        : 'Phát hiện và xử lý sớm thông tin tiêu cực — theo dõi phản hồi của từng chiến dịch và can thiệp ngay khi dư luận chuyển hướng.',
       details: isEn
         ? [
-            'Immediate alert triggers upon abnormal spikes in negative sentiment and hostile keywords',
-            'Viral contagion forecasting and objective counter-narrative formulation assistance',
-            'Round-the-clock monitoring of key online forums, trade publications, and influencer feeds',
-            'Virtual command room coordinating pre-vetted spokesperson releases and PR statements'
+            'Group monitoring and scanning across communities and pages',
+            'Early alerts when negative sentiment spikes',
+            'Coordinated response from the same console used to publish',
+            'Post-crisis reports on reach and sentiment recovery'
           ]
         : [
-            'Cảnh báo tức thời khi tần suất từ khóa tiêu cực tăng đột biến',
-            'Dự báo xu hướng lan truyền và gợi ý nội dung phản hồi khách quan',
-            'Quét liên tục các hội nhóm và trang tin tức trọng điểm',
-            'Phòng tác chiến điều phối với thông điệp đã được phê duyệt sẵn'
+            'Giám sát và quét các hội nhóm, cộng đồng, fanpage',
+            'Cảnh báo sớm khi cảm xúc tiêu cực tăng đột biến',
+            'Phối hợp phản hồi ngay trên cùng hệ thống đăng bài',
+            'Báo cáo sau khủng hoảng về mức độ lan truyền và phục hồi hình ảnh'
           ],
-      deployedFor: 'Corporate Communications · Public Entities · Consumer Brands'
+      deployedFor: isEn ? 'Brands · PR agencies · Public figures' : 'Thương hiệu · Agency PR · Người nổi tiếng'
     },
     {
       id: '15',
-      name: isEn ? 'EduTech (Smart LMS)' : 'Nền Tảng Đào Tạo Số (Smart LMS)',
+      slug: 'edutech',
+      name: 'EduTech',
       category: 'biz',
       icon: <GraduationCap className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Next-generation LMS embedded with pervasive AI: Teacher AI copilot, automated lecture slide generation, and intelligent homework grading.'
-        : 'Hệ thống quản lý học tập thế hệ mới tích hợp AI toàn diện: Trợ giảng AI Copilot, tự động sinh bài giảng slide/video và chấm điểm thông minh.',
+        ? 'A next-generation LMS with AI across teaching — from smart reminders and lecture authoring to approval before publishing to students — built on Moodle 5 for Vietnamese universities.'
+        : 'Nền tảng LMS thế hệ mới tích hợp AI xuyên suốt hoạt động giảng dạy — từ nhắc việc thông minh, soạn bài giảng đến phê duyệt trước khi xuất bản cho sinh viên — mở rộng từ Moodle 5 cho đại học Việt Nam.',
       details: isEn
         ? [
-            'AI Teaching Copilot: Benchmarks syllabus progression against lesson pacing in real time',
-            'Generates slides, quizzes, and illustrative video materials directly from curriculum files',
-            'Automated grading with constructive rationale and institutional plagiarism screening',
-            'Private on-premise cloud deployment complying with data sovereignty and Decree 13/2023'
+            'AI Teaching Copilot: compares the syllabus with actual teaching and flags risks for lecturers',
+            'Multimedia lecture authoring: AI-generated slides, videos and labs from the course outline',
+            'Smart grading with rubrics, AI-suggested scores and plagiarism warnings',
+            'AI teaching-quality review; data kept on the school’s own infrastructure (Decree 13/2023)'
           ]
         : [
-            'AI Teaching Copilot: Đối sánh đề cương với tiến độ giảng dạy và phát hiện rủi ro',
-            'Tự động sinh slide, bài tập và video minh họa trực tiếp từ giáo trình',
-            'Chấm điểm tự động với nhận xét chi tiết và quét kiểm tra đạo văn trước khi công bố',
-            'Vận hành trên hạ tầng riêng của nhà trường, tuân thủ Nghị định 13/2023 bảo vệ dữ liệu'
+            'AI Teaching Copilot: đối chiếu đề cương với thực tế giảng dạy, tự sinh việc cần làm và cảnh báo rủi ro',
+            'Soạn bài giảng đa phương tiện: AI tạo Slide, Video, Bài thực hành từ đề cương môn học',
+            'Chấm bài thông minh: rubric chi tiết, điểm gợi ý từ AI và cảnh báo đạo văn',
+            'Đánh giá chất lượng giảng dạy bằng AI; dữ liệu lưu tại hạ tầng riêng của trường, tuân thủ Nghị định 13/2023'
           ],
-      deployedFor: 'Universities · K-12 School Systems · Corporate Academies'
+      deployedFor: isEn ? 'Universities · Colleges · Training centres' : 'Đại học · Cao đẳng · Trung tâm đào tạo'
     },
     {
       id: '16',
-      name: isEn ? 'Human Resource Management (HRMS)' : 'Quản Trị Nhân Sự Toàn Diện (HRMS)',
+      slug: 'hrms',
+      name: 'HRMS',
       category: 'biz',
       icon: <Briefcase className="w-5 h-5 text-emerald-400" />,
       summary: isEn
-        ? 'Recruitment, smart timekeeping, payroll, KPI appraisals, and workforce upskilling co-engineered with Druce & Millennia.'
-        : 'Tuyển dụng, chấm công, tính lương, đánh giá KPI và đào tạo nhân sự trên một nền tảng hợp tác chiến lược cùng Druce & Millennia.',
+        ? 'Recruitment, attendance, payroll, performance and training on one platform — built with Druce and Millennia.'
+        : 'Tuyển dụng, chấm công, tính lương, đánh giá hiệu suất và đào tạo trên một nền tảng — xây dựng cùng Druce và Millennia.',
       details: isEn
         ? [
-            'AI Job Description generator and semantic candidate CV matchmaking against requirements',
-            'Automated interview scheduling and preliminary candidate qualification workflows',
-            'Transparent automated timesheets, multi-tiered payroll computation, and KPI dashboards',
-            'Prescriptive learning recommendations bridging individual employee skill gaps'
+            'Job description management, generated with AI',
+            'Candidate profiles with AI CV scoring',
+            'AI interview scheduling',
+            'Attendance, payroll, performance and training in one system'
           ]
         : [
-            'AI tạo mô tả công việc (JD) và khớp nối ngữ nghĩa hồ sơ ứng viên với vị trí',
-            'Tự động xếp lịch phỏng vấn và hỗ trợ sàng lọc sơ bộ ứng viên',
-            'Quy trình tự động chấm công, tính lương và đánh giá hiệu suất minh bạch',
-            'Gợi ý lộ trình đào tạo nhân sự phù hợp với khoảng trống năng lực'
+            'Quản lý mô tả công việc (JD) được tạo bằng AI',
+            'Hồ sơ ứng viên và chấm điểm CV bằng AI',
+            'Tự động xếp lịch phỏng vấn bằng AI',
+            'Chấm công, tính lương, đánh giá hiệu suất và đào tạo trên cùng hệ thống'
           ],
-      deployedFor: 'Enterprise HR · Growth Tech Companies · Staffing Firms'
+      deployedFor: isEn ? 'Enterprise HR · Education groups' : 'Nhân sự doanh nghiệp · Tập đoàn giáo dục'
+    },
+    {
+      id: '17',
+      slug: 'property-management',
+      name: isEn ? 'Property Management' : 'Quản Lý Bất Động Sản',
+      category: 'biz',
+      icon: <Building2 className="w-5 h-5 text-emerald-400" />,
+      summary: isEn
+        ? 'A proptech ecosystem — business app, customer app and merchant app on one platform — for portfolio, pricing and owner–buyer matching. Delivered for Masterise Homes in Vietnam and Druce in the UK.'
+        : 'Hệ sinh thái proptech — Biz App, Customer App và Merchant App trên cùng nền tảng — quản lý danh mục, giá bán và kết nối chủ nhà với người mua. Đã triển khai cho Masterise Homes (Việt Nam) và Druce (Anh).',
+      details: isEn
+        ? [
+            'Centralised inventory with lifecycle tracking, ownership insight and real-time availability',
+            'Lead & KPI management: multi-channel lead scoring, smart assignment, commission and revenue forecasting',
+            'Integrated Smart CRM, CMS, accounting, event management and presales modules',
+            'Customer app for property discovery and services; merchant app for partners and suppliers'
+          ]
+        : [
+            'Quản lý giỏ hàng tập trung, theo dõi vòng đời, chủ sở hữu và tình trạng trống theo thời gian thực',
+            'Quản lý khách hàng tiềm năng & KPI: chấm điểm đa kênh, phân bổ thông minh, dự báo hoa hồng và doanh thu',
+            'Tích hợp Smart CRM, CMS, Kế toán, Quản lý sự kiện và Presales',
+            'App khách hàng tìm kiếm bất động sản và dịch vụ; App đối tác cho nhà cung cấp'
+          ],
+      deployedFor: 'Masterise Homes · Druce (UK)'
+    },
+    {
+      id: '18',
+      slug: 'ai-valuation',
+      name: isEn ? 'AI Valuation' : 'Định Giá Bất Động Sản Bằng AI',
+      category: 'biz',
+      icon: <TrendingUp className="w-5 h-5 text-emerald-400" />,
+      summary: isEn
+        ? 'Live market data and predictive pricing models give confident pricing and negotiation positions for every unit.'
+        : 'Dữ liệu thị trường trực tiếp kết hợp mô hình dự báo giá giúp định giá và đàm phán tự tin cho từng sản phẩm.',
+      details: isEn
+        ? [
+            'Live market data feeding predictive pricing models',
+            'Price recommendations per unit, floor and view',
+            'Negotiation ranges for sales teams and agents',
+            'Built into the business app alongside inventory and sales plans'
+          ]
+        : [
+            'Dữ liệu thị trường trực tiếp đưa vào mô hình dự báo giá',
+            'Gợi ý giá cho từng căn theo tầng, hướng và tầm nhìn',
+            'Khung giá đàm phán cho đội ngũ kinh doanh và môi giới',
+            'Tích hợp sẵn trong Biz App cùng giỏ hàng và bảng hàng'
+          ],
+      deployedFor: isEn ? 'Developers · Brokerages' : 'Chủ đầu tư · Sàn giao dịch'
+    },
+    {
+      id: '19',
+      slug: 'home-toolkits',
+      name: 'Home Toolkits',
+      category: 'biz',
+      icon: <Home className="w-5 h-5 text-emerald-400" />,
+      summary: isEn
+        ? '2D/3D floor plans, 360° virtual tours and AI-enhanced listing imagery that help buyers experience a property before they visit.'
+        : 'Mặt bằng 2D/3D, tham quan ảo 360° và hình ảnh tin đăng được AI nâng cấp giúp khách hàng trải nghiệm bất động sản trước khi đến xem trực tiếp.',
+      details: isEn
+        ? [
+            '2D/3D floor plans for every unit',
+            '360° virtual tours inside the customer app',
+            'AI-enhanced listing imagery',
+            'Shareable listings that feed straight into multi-channel posting'
+          ]
+        : [
+            'Mặt bằng 2D/3D cho từng căn hộ',
+            'Tham quan ảo 360° ngay trong ứng dụng khách hàng',
+            'Hình ảnh tin đăng được AI nâng cấp',
+            'Chia sẻ tin đăng và đăng đa kênh chỉ với một thao tác'
+          ],
+      deployedFor: isEn ? 'Developers · Agents · Property portals' : 'Chủ đầu tư · Môi giới · Cổng thông tin bất động sản'
+    },
+    {
+      id: '20',
+      slug: 'custom-ai',
+      name: isEn ? 'Custom AI Solutions' : 'Giải Pháp AI Theo Yêu Cầu',
+      category: 'biz',
+      icon: <Sparkles className="w-5 h-5 text-emerald-400" />,
+      summary: isEn
+        ? 'Your workflow, your data, our models — end to end. We combine generative AI, large language models and IoT into products that are deployed, measured and improved.'
+        : 'Quy trình của bạn, dữ liệu của bạn, mô hình của chúng tôi — trọn gói từ đầu đến cuối. Kết hợp Generative AI, LLM và IoT thành sản phẩm được triển khai, đo lường và liên tục cải tiến.',
+      details: isEn
+        ? [
+            'Retrieval-augmented generation (RAG) over your own documents, tickets and conversations',
+            'Domain fine-tuning and vector & semantic search',
+            'Computer vision at the edge and real-time IoT monitoring',
+            'Delivered by AI experts and engineers from discovery to day-to-day operations'
+          ]
+        : [
+            'RAG trên chính tài liệu, ticket và hội thoại của doanh nghiệp',
+            'Tinh chỉnh mô hình theo lĩnh vực, tìm kiếm vector & ngữ nghĩa',
+            'Thị giác máy tính tại biên (edge) và giám sát IoT thời gian thực',
+            'Chuyên gia và kỹ sư AI đồng hành từ khảo sát đến vận hành hằng ngày'
+          ],
+      deployedFor: isEn ? 'Any industry' : 'Mọi lĩnh vực'
     }
   ];
 
@@ -412,24 +544,24 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
       <div className="flex items-center gap-3 text-xs tracking-widest uppercase text-emerald-400 font-semibold mb-6">
         <span>02</span>
         <span className="w-8 h-[1px] bg-emerald-400/40"></span>
-        <span>{isEn ? '16 Production AI Products · Enterprise Suite' : 'Hệ Sinh Thái 16 Sản Phẩm AI (Full Portfolio)'}</span>
+        <span>{isEn ? 'AI Product Ecosystem · 20 Products & Solutions' : 'Hệ Sinh Thái Sản Phẩm AI · 20 Sản Phẩm & Giải Pháp'}</span>
       </div>
 
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-12">
         <div className="max-w-2xl">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-normal tracking-tight text-white leading-[1.15]">
-            {isEn ? 'Enterprise AI Products in Production' : 'Toàn Bộ 16 Sản Phẩm AI Thương Mại'}
+            {isEn ? 'One Platform, Twenty AI Products' : 'Một Nền Tảng, 20 Sản Phẩm AI'}
           </h2>
           <p className="text-zinc-400 text-base sm:text-lg mt-4 leading-relaxed">
             {isEn
-              ? 'Categorized into two mission-critical pillars: 08 operational security platforms and 08 revenue acceleration engines.'
-              : 'Chia thành 2 nhóm giải pháp cốt lõi: 08 giải pháp Vận hành, An ninh & Tương tác khách hàng và 08 giải pháp Dữ liệu, Kinh doanh & Tăng trưởng.'}
+              ? 'Twenty products and solutions run as one platform: 8 for operations, security and customer engagement, and 12 for marketing, data intelligence and business systems.'
+              : '20 sản phẩm và giải pháp vận hành trên cùng một nền tảng: 8 giải pháp Vận hành, An ninh & Tương tác khách hàng và 12 giải pháp Marketing, Dữ liệu & Nền tảng kinh doanh.'}
           </p>
         </div>
 
         {/* Filter Pills */}
         <ScrollReveal delay={120} distance={16}>
-          <div className="flex items-center gap-2 p-1 rounded-xl bg-zinc-900 border border-white/10 shrink-0">
+          <div className="flex flex-wrap items-center gap-2 p-1 rounded-xl bg-zinc-900 border border-white/10 shrink-0">
             <button
               onClick={() => setActiveCategory('all')}
               className={`px-4 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
@@ -438,7 +570,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              {isEn ? 'All (16 Products)' : 'Tất cả (16)'}
+              {isEn ? 'All (20)' : 'Tất cả (20)'}
             </button>
             <button
               onClick={() => setActiveCategory('ops')}
@@ -448,7 +580,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              {isEn ? 'Operations & Security' : 'Vận hành & An ninh'}
+              {isEn ? 'Operations & Engagement (8)' : 'Vận hành & Tương tác (8)'}
             </button>
             <button
               onClick={() => setActiveCategory('biz')}
@@ -458,7 +590,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
                   : 'text-zinc-400 hover:text-white'
               }`}
             >
-              {isEn ? 'Marketing & Business' : 'Kinh doanh & Tăng trưởng'}
+              {isEn ? 'Marketing, Data & Business (12)' : 'Marketing, Dữ liệu & Kinh doanh (12)'}
             </button>
           </div>
         </ScrollReveal>
@@ -472,27 +604,36 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
             return (
               <button
                 key={prod.id}
-                onClick={() => setSelectedProductId(prod.id)}
-                className={`p-4 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                onClick={() => selectProduct(prod.id)}
+                className={`group p-3 rounded-xl text-left border transition-all cursor-pointer flex flex-col justify-between ${
                   isSelected
                     ? 'bg-emerald-950/30 border-emerald-500/60 shadow-lg shadow-emerald-950/30'
                     : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-3">
+                  <div className="relative aspect-[16/10] mb-3 rounded-lg overflow-hidden bg-zinc-900 border border-white/5">
+                    <img
+                      src={PRODUCT_IMAGES[prod.slug]}
+                      alt=""
+                      loading="lazy"
+                      draggable={false}
+                      className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="flex items-center justify-between mb-2 px-1">
                     <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
                       {prod.icon}
                     </div>
                     <span className="text-[11px] font-mono text-zinc-500 font-bold">{prod.id}</span>
                   </div>
-                  <h4 className="font-semibold text-sm text-white mb-1 leading-snug">{prod.name}</h4>
-                  <p className="text-[11px] text-zinc-400 line-clamp-2 leading-relaxed">{prod.summary}</p>
+                  <h4 className="font-semibold text-sm text-white mb-1 leading-snug px-1">{prod.name}</h4>
+                  <p className="text-[11px] text-zinc-400 line-clamp-3 leading-relaxed px-1">{prod.summary}</p>
                 </div>
 
-                <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-[11px]">
+                <div className="mt-3 pt-2.5 mx-1 border-t border-white/5 flex items-center justify-between text-[11px]">
                   <span className="text-zinc-500">
-                    {prod.category === 'ops' ? (isEn ? 'Operations & IoT' : 'Vận hành & IoT') : (isEn ? 'Business & Data' : 'Dữ liệu & Kinh doanh')}
+                    {prod.category === 'ops' ? (isEn ? 'Operations & Engagement' : 'Vận hành & Tương tác') : (isEn ? 'Marketing, Data & Business' : 'Marketing, Dữ liệu & Kinh doanh')}
                   </span>
                   <span className={`flex items-center gap-1 font-medium ${isSelected ? 'text-emerald-400' : 'text-zinc-400'}`}>
                     {isEn ? 'Details' : 'Chi tiết'} <ArrowRight className="w-3 h-3" />
@@ -507,7 +648,7 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
       {/* Selected Product Deep Dive Card - Lazy Loaded */}
       <LazyBlock minHeight="420px">
         <ScrollReveal delay={220} distance={32}>
-          <div className="p-8 sm:p-10 rounded-2xl bg-zinc-950/90 border border-emerald-500/30 relative overflow-hidden">
+          <div ref={detailRef} className="scroll-mt-24 p-8 sm:p-10 rounded-2xl bg-zinc-950/90 border border-emerald-500/30 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500/10 blur-3xl pointer-events-none rounded-full" />
 
             <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -545,43 +686,20 @@ export const ProductsSection: React.FC<ProductsSectionProps> = ({ lang = 'VI' })
               </div>
 
               <div className="lg:col-span-5 space-y-4">
-                {/* Brochure Visual Architecture Card */}
-                <div className="p-5 rounded-xl bg-gradient-to-br from-emerald-950/40 via-zinc-950/80 to-black border border-emerald-500/20 relative overflow-hidden">
-                  <div className="flex items-center justify-between pb-3 border-b border-white/10">
-                    <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-[11px] font-mono text-zinc-300 font-semibold uppercase">
-                        {isEn ? 'Enterprise Deployment Spec' : 'Thông Số Triển Khai Doanh Nghiệp'}
-                      </span>
-                    </div>
-                    <span className="text-[10px] font-mono text-emerald-400">PROD-SYS-2026</span>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3 py-3 text-xs">
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-[10px] text-zinc-500 block uppercase">{isEn ? 'Architecture' : 'Kiến trúc'}</span>
-                      <span className="text-white font-medium text-[11px]">Microservices / Edge</span>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-[10px] text-zinc-500 block uppercase">{isEn ? 'Inference Latency' : 'Độ trễ suy luận'}</span>
-                      <span className="text-emerald-400 font-mono font-medium text-[11px]">&lt; 15ms P99</span>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-[10px] text-zinc-500 block uppercase">{isEn ? 'Security Model' : 'Bảo mật dữ liệu'}</span>
-                      <span className="text-white font-medium text-[11px]">E2E Encrypted</span>
-                    </div>
-                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/5">
-                      <span className="text-[10px] text-zinc-500 block uppercase">{isEn ? 'Timeline' : 'Thời gian tích hợp'}</span>
-                      <span className="text-white font-medium text-[11px]">{isEn ? '2 – 4 Weeks' : '2 – 4 tuần'}</span>
-                    </div>
-                  </div>
-
-                  <p className="text-[11px] text-zinc-400 leading-relaxed border-t border-white/5 pt-3">
-                    {isEn
-                      ? 'Turnkey handoff with exhaustive API specs, native SDKs, and dedicated GreenSoftits engineers for 24/7 SLA operations.'
-                      : 'Bàn giao đầy đủ tài liệu API, SDK tích hợp và đội ngũ chuyên gia GreenSoftits hỗ trợ vận hành 24/7.'}
-                  </p>
-                </div>
+                {/* Product illustration from the company brochure */}
+                <figure className="rounded-xl overflow-hidden border border-emerald-500/20 bg-zinc-900">
+                  <img
+                    key={selectedProduct.slug}
+                    src={PRODUCT_IMAGES[selectedProduct.slug]}
+                    alt={selectedProduct.name}
+                    loading="lazy"
+                    draggable={false}
+                    className="w-full max-h-[420px] object-contain bg-zinc-950"
+                  />
+                  <figcaption className="px-4 py-2.5 text-[11px] text-zinc-400 border-t border-white/5">
+                    {isEn ? 'Product interface · ' : 'Giao diện sản phẩm · '}{selectedProduct.name}
+                  </figcaption>
+                </figure>
 
                 <div className="pt-1">
                   <a
